@@ -1,0 +1,59 @@
+{
+  "header": {
+    "home": "Home",
+    "articles": "Articles",
+    "about": "About",
+    "projects": "Projects",
+    "contact": "Contact"
+  },
+  "hero": {
+    "title": "Welcome to wudcx's Blog",
+    "subtitle": "Recording programming learning, technical exploration and project practice",
+    "readArticles": "Read Articles"
+  },
+  "articles": {
+    "latest": "Latest Articles",
+    "readMore": "Read more",
+    "viewMore": "View more articles"
+  },
+  "about": {
+    "title": "About Me",
+    "description1": "I am a developer passionate about technology, focusing on full-stack development and AI tool applications. Through this blog, I share my learning experiences in technology.",
+    "description2": "My tech stack includes: JavaScript/TypeScript, React, Node.js, Python, and C++.",
+    "skills": "Skills"
+  },
+  "projects": {
+    "title": "Project Showcase",
+    "viewProject": "View Project"
+  },
+  "contact": {
+    "title": "Contact Me",
+    "email": "wudcx@example.com",
+    "website": "https://wudcx.com",
+    "github": "github.com/wudcx",
+    "namePlaceholder": "Name",
+    "emailPlaceholder": "Email",
+    "messagePlaceholder": "Message",
+    "sendMessage": "Send Message",
+    "notification": {
+      "fillAll": "Please fill in all required fields",
+      "invalidEmail": "Please enter a valid email address",
+      "sending": "Sending message...",
+      "success": "Message sent successfully! I will reply to you as soon as possible."
+    }
+  },
+  "articleDetail": {
+    "backToHome": "Back to Home",
+    "loading": "Loading...",
+    "articleNotFound": "Article not found",
+    "loadError": "Error loading article"
+  },
+  "footer": {
+    "copyright": "© 2026 wudcx. Created with Vue3.",
+    "disclaimer": "This blog is for learning and demonstration purposes only."
+  },
+  "common": {
+    "toggleTheme": "Toggle theme",
+    "menu": "Menu"
+  }
+}

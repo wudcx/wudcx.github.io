@@ -1,0 +1,59 @@
+{
+  "header": {
+    "home": "首页",
+    "articles": "文章",
+    "about": "关于",
+    "projects": "项目",
+    "contact": "联系"
+  },
+  "hero": {
+    "title": "欢迎来到wudcx的个人博客",
+    "subtitle": "记录编程学习、技术探索与项目实践",
+    "readArticles": "阅读文章"
+  },
+  "articles": {
+    "latest": "最新文章",
+    "readMore": "阅读全文",
+    "viewMore": "查看更多文章"
+  },
+  "about": {
+    "title": "关于我",
+    "description1": "我是一名热爱技术的开发者，专注于全栈开发和AI工具的应用。通过这个博客分享我的技术学习心得和项目实践。",
+    "description2": "我的技术栈包括：JavaScript/TypeScript、React、Node.js、Python和C++。",
+    "skills": "技能"
+  },
+  "projects": {
+    "title": "项目展示",
+    "viewProject": "查看项目"
+  },
+  "contact": {
+    "title": "联系我",
+    "email": "wudcx@example.com",
+    "website": "https://wudcx.com",
+    "github": "github.com/wudcx",
+    "namePlaceholder": "姓名",
+    "emailPlaceholder": "邮箱",
+    "messagePlaceholder": "留言",
+    "sendMessage": "发送消息",
+    "notification": {
+      "fillAll": "请填写所有必填字段",
+      "invalidEmail": "请输入有效的邮箱地址",
+      "sending": "消息发送中...",
+      "success": "消息发送成功！我会尽快回复您。"
+    }
+  },
+  "articleDetail": {
+    "backToHome": "返回首页",
+    "loading": "加载中...",
+    "articleNotFound": "文章未找到",
+    "loadError": "加载文章时出错"
+  },
+  "footer": {
+    "copyright": "© 2026 wudcx. 使用Vue3创建.",
+    "disclaimer": "本博客仅用于学习和演示目的"
+  },
+  "common": {
+    "toggleTheme": "切换主题",
+    "menu": "菜单"
+  }
+}
