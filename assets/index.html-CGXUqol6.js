@@ -1,6 +1,0 @@
-import{_ as e}from"./plugin-vue_export-helper-DlAUqK2U.js";import{c as t,a as o,o as n}from"./app-CNtV-C7P.js";const m={};function a(c,r){return n(),t("div",null,[o(`
-#这是一个博客主页的案例。
-
-要使用此布局，你应该在页面前端设置 \`layout: Blog\` 和 \`home: true\`。
-
-相关配置文档请见 [博客主页](https://theme-hope.vuejs.press/zh/guide/blog/home.html)。 `)])}const l=e(m,[["render",a]]),h=JSON.parse('{"path":"/","title":"博客主页","lang":"zh-CN","frontmatter":{"home":true,"layout":"Blog","icon":"house","title":"博客主页","bgImage":"/my_image/back_image.jpg","heroText":null,"heroFullScreen":false,"projects":null},"git":{"createdTime":1761386042000,"updatedTime":1763515695000,"contributors":[{"name":"wudancheng","username":"wudancheng","email":"724214532@qq.com","commits":4,"url":"https://github.com/wudancheng"},{"name":"wudc1","username":"wudc1","email":"wudc1@chinafastprint.com","commits":5,"url":"https://github.com/wudc1"}]},"readingTime":{"minutes":0.41,"words":123},"filePathRelative":"README.md","excerpt":"<!--\\n#这是一个博客主页的案例。\\n\\n要使用此布局，你应该在页面前端设置 `layout: Blog` 和 `home: true`。\\n\\n相关配置文档请见 [博客主页](https://theme-hope.vuejs.press/zh/guide/blog/home.html)。 -->\\n"}');export{l as comp,h as data};
