@@ -5,12 +5,12 @@
       <div class="articles-grid">
         <article class="card" v-for="article in articles" :key="article.id">
           <div class="card-header">
-            <span class="category">{{ article.category }}</span>
+            <span class="category">{{ t(article.category) }}</span>
             <span class="date">{{ article.date }}</span>
           </div>
           <div class="card-body">
-            <h3>{{ article.title }}</h3>
-            <p>{{ article.description }}</p>
+            <h3>{{ t(article.title) }}</h3>
+            <p>{{ t(article.description) }}</p>
           </div>
           <div class="card-footer">
             <router-link :to="'/article/' + article.id" class="read-more">{{ t('articles.readMore') }} <i class="fas fa-arrow-right"></i></router-link>

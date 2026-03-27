@@ -14,7 +14,26 @@
   "articles": {
     "latest": "最新文章",
     "readMore": "阅读全文",
-    "viewMore": "查看更多文章"
+    "viewMore": "查看更多文章",
+    "category": {
+      "nvim": "编辑器",
+      "opencode": "OpenCode教程",
+      "cpp": "C++"
+    },
+    "list": {
+      "nvim": {
+        "title": "nvim入门教程",
+        "description": "Neovim是一款现代化的Vim分支，本文带你从零开始配置和使用nvim，包括插件管理、基本操作和LSP集成。"
+      },
+      "opencode": {
+        "title": "学习opencode教程",
+        "description": "OpenCode是一个强大的AI编程助手，本教程涵盖其核心功能、使用技巧和实战案例，帮助你快速上手。"
+      },
+      "cpp": {
+        "title": "c++面试题",
+        "description": "汇总常见C++面试知识点，包括面向对象、内存管理、STL容器和算法等高频考点与详细解析。"
+      }
+    }
   },
   "about": {
     "title": "关于我",

@@ -17,9 +17,9 @@
       
       <div v-else class="article-content">
         <header class="article-header">
-          <h1 class="article-title">{{ article?.title }}</h1>
+          <h1 class="article-title">{{ t(article?.title ?? '') }}</h1>
           <div class="article-meta">
-            <span class="category">{{ article?.category }}</span>
+            <span class="category">{{ t(article?.category ?? '') }}</span>
             <span class="date">{{ article?.date }}</span>
           </div>
         </header>
@@ -37,7 +37,7 @@ import { useI18n } from 'vue-i18n'
 import MarkdownRenderer from '../components/MarkdownRenderer.vue'
 import { articles, type Article } from '../articles'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const route = useRoute()
 const loading = ref(true)
 const error = ref('')
@@ -59,10 +59,10 @@ const loadArticle = async () => {
     
     article.value = foundArticle
     
-    // 从public/articles加载Markdown文件
-    const response = await fetch(`/articles/${foundArticle.filename}`)
+    // Load markdown file based on current locale
+    const response = await fetch(`/articles/${locale.value}/${foundArticle.filename}.md`)
     if (!response.ok) {
-      throw new Error(`加载失败: ${response.status}`)
+      throw new Error(`Failed to load: ${response.status}`)
     }
     
     markdownContent.value = await response.text()

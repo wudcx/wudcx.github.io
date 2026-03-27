@@ -14,7 +14,26 @@
   "articles": {
     "latest": "Latest Articles",
     "readMore": "Read more",
-    "viewMore": "View more articles"
+    "viewMore": "View more articles",
+    "category": {
+      "nvim": "Editor",
+      "opencode": "OpenCode Tutorial",
+      "cpp": "C++"
+    },
+    "list": {
+      "nvim": {
+        "title": "Getting Started with Neovim",
+        "description": "Neovim is a modern Vim fork. This guide walks you through configuring and using nvim from scratch, including plugin management, basic operations, and LSP integration."
+      },
+      "opencode": {
+        "title": "Learning OpenCode Tutorial",
+        "description": "OpenCode is a powerful AI programming assistant. This tutorial covers its core features, usage tips, and practical cases to help you get started quickly."
+      },
+      "cpp": {
+        "title": "C++ Interview Questions",
+        "description": "Common C++ interview topics including OOP, memory management, STL containers, and algorithms with detailed explanations."
+      }
+    }
   },
   "about": {
     "title": "About Me",
