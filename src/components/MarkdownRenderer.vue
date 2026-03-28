@@ -5,11 +5,44 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import MarkdownIt from 'markdown-it'
+import markdownItContainer from 'markdown-it-container'
+import { createHighlighter, type Highlighter } from 'shiki'
 
 const props = defineProps<{
   source?: string
   content?: string
 }>()
+
+const highlighter = ref<Highlighter | null>(null)
+
+const supportedLanguages = [
+  'javascript',
+  'typescript',
+  'vue',
+  'bash',
+  'json',
+  'python',
+  'css',
+  'html',
+  'markdown',
+  'text'
+]
+
+async function initHighlighter() {
+  highlighter.value = await createHighlighter({
+    themes: ['github-dark'],
+    langs: supportedLanguages
+  })
+}
+
+function renderCode(code: string, lang: string): string {
+  if (!highlighter.value) return code
+  const language = supportedLanguages.includes(lang) ? lang : 'text'
+  return highlighter.value.codeToHtml(code, {
+    lang: language,
+    theme: 'github-dark'
+  })
+}
 
 const md = new MarkdownIt({
   html: true,
@@ -17,13 +50,75 @@ const md = new MarkdownIt({
   typographer: true
 })
 
+md.use(markdownItContainer, 'tip', {
+  render: (tokens: any[], idx: number): string => {
+    if (tokens[idx].nesting === 1) {
+      return `<div class="callout callout-tip">\n<div class="callout-icon">💡</div>\n<div class="callout-content">\n`
+    } else {
+      return `</div>\n</div>\n`
+    }
+  }
+})
+
+md.use(markdownItContainer, 'warning', {
+  render: (tokens: any[], idx: number): string => {
+    if (tokens[idx].nesting === 1) {
+      return `<div class="callout callout-warning">\n<div class="callout-icon">⚠️</div>\n<div class="callout-content">\n`
+    } else {
+      return `</div>\n</div>\n`
+    }
+  }
+})
+
+md.use(markdownItContainer, 'info', {
+  render: (tokens: any[], idx: number): string => {
+    if (tokens[idx].nesting === 1) {
+      return `<div class="callout callout-info">\n<div class="callout-icon">ℹ️</div>\n<div class="callout-content">\n`
+    } else {
+      return `</div>\n</div>\n`
+    }
+  }
+})
+
+md.use(markdownItContainer, 'danger', {
+  render: (tokens: any[], idx: number): string => {
+    if (tokens[idx].nesting === 1) {
+      return `<div class="callout callout-danger">\n<div class="callout-icon">🚨</div>\n<div class="callout-content">\n`
+    } else {
+      return `</div>\n</div>\n`
+    }
+  }
+})
+
+md.renderer.rules.fence = (tokens: any[], idx: number, options: any, env: any, self: any): string => {
+  const token = tokens[idx]
+  const lang = token.info.trim() || 'text'
+  const code = token.content
+  return renderCode(code, lang)
+}
+
+md.renderer.rules.heading_open = (tokens: any[], idx: number, options: any, env: any, self: any): string => {
+  const token = tokens[idx]
+  const level = parseInt(token.tag.replace('h', ''), 10)
+  const nextToken = tokens[idx + 1]
+  const text = nextToken?.content || ''
+  const id = text.toLowerCase().replace(/[^\w\u4e00-\u9fa5]+/g, '-')
+  return `<h${level} id="${id}" class="heading-anchor">`
+}
+
 const renderedHtml = computed(() => {
   const text = props.content || props.source || ''
   return md.render(text)
 })
+
+onMounted(() => {
+  initHighlighter()
+})
 </script>
 
 <style scoped>
+@import '../assets/styles/callouts.css';
+
 .markdown-body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
   font-size: 16px;
@@ -62,13 +157,16 @@ const renderedHtml = computed(() => {
 }
 
 .markdown-body :deep(pre) {
-  padding: 16px;
   overflow: auto;
   font-size: 85%;
   line-height: 1.45;
-  background-color: #f6f8fa;
-  border-radius: 3px;
+  border-radius: 6px;
   margin-bottom: 16px;
+}
+
+.markdown-body :deep(pre code) {
+  padding: 0;
+  background-color: transparent;
 }
 
 .markdown-body :deep(blockquote) {

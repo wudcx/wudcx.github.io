@@ -1,5 +1,3 @@
-# C++ Interview Questions Summary
-
 ## 1. Object-Oriented Programming Basics
 
 ### 1. What is Object-Oriented Programming?
