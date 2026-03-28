@@ -3,62 +3,111 @@
     "home": "Home",
     "articles": "Articles",
     "about": "About",
-    "projects": "Projects",
+    "features": "Learning Paths",
     "contact": "Contact"
   },
+  "nav": {
+    "startLearning": "Start Learning",
+    "learningPaths": "Learning Paths",
+    "practical": "Practice",
+    "advanced": "Advanced"
+  },
   "hero": {
-    "title": "Welcome to wudcx's Blog",
-    "subtitle": "Recording programming learning, technical exploration and project practice",
-    "readArticles": "Read Articles"
+    "badge": "Tech Blog & Tutorials",
+    "title": "Build Your",
+    "titleHighlight": "Development Powerhouse",
+    "subtitle": "From editor configuration to AI-assisted programming, I share practical tutorials and development experiences to help you become a more efficient developer.",
+    "cta": "Start Exploring",
+    "ctaSecondary": "Learn More",
+    "stats": {
+      "articles": "In-depth Tutorials",
+      "topics": "Topic Areas",
+      "readers": "Readers"
+    }
+  },
+  "features": {
+    "title": "Learning Paths",
+    "subtitle": "Whether you're just starting out or looking to level up, there's content here for you",
+    "devEfficiency": {
+      "title": "Dev Efficiency",
+      "description": "Neovim setup, terminal optimization, development workflows - 10x your productivity.",
+      "tags": ["Neovim", "Terminal", "zsh", "tmux"]
+    },
+    "aiProgramming": {
+      "title": "AI Programming",
+      "description": "OpenCode and AI tool tutorials - make AI your programming partner.",
+      "tags": ["OpenCode", "Copilot", "LLM", "Prompt"]
+    },
+    "programming": {
+      "title": "Programming",
+      "description": "C++, Python, system design - complete learning paths from beginner to advanced.",
+      "tags": ["C++", "Python", "System Design", "Algorithms"]
+    }
   },
   "articles": {
-    "latest": "Latest Articles",
+    "title": "Latest Articles",
+    "subtitle": "In-depth technical articles and practical insights",
+    "latest": "Latest",
     "readMore": "Read more",
-    "viewMore": "View more articles",
+    "viewMore": "View all articles",
+    "readTime": "min read",
     "category": {
       "nvim": "Editor",
-      "opencode": "OpenCode Tutorial",
+      "opencode": "AI Tools",
       "cpp": "C++"
     },
     "list": {
       "nvim": {
-        "title": "Getting Started with Neovim",
-        "description": "Neovim is a modern Vim fork. This guide walks you through configuring and using nvim from scratch, including plugin management, basic operations, and LSP integration."
+        "title": "Neovim: From Beginner to Master",
+        "description": "Configure a modern Vim development environment from scratch, including plugin management, LSP integration, and Telescope search."
       },
       "opencode": {
-        "title": "Learning OpenCode Tutorial",
-        "description": "OpenCode is a powerful AI programming assistant. This tutorial covers its core features, usage tips, and practical cases to help you get started quickly."
+        "title": "Complete OpenCode Guide",
+        "description": "Deep dive into OpenCode's core features, usage tips, and practical cases to master AI-assisted programming."
       },
       "cpp": {
-        "title": "C++ Interview Questions",
-        "description": "Common C++ interview topics including OOP, memory management, STL containers, and algorithms with detailed explanations."
+        "title": "C++ Interview Essentials",
+        "description": "Covers high-frequency C++ interview topics: memory management, OOP, STL containers, algorithm templates."
       }
     }
   },
   "about": {
     "title": "About Me",
-    "description1": "I am a developer passionate about technology, focusing on full-stack development and AI tool applications. Through this blog, I share my learning experiences in technology.",
-    "description2": "My tech stack includes: JavaScript/TypeScript, React, Node.js, Python, and C++.",
-    "skills": "Skills"
+    "intro": "Developer passionate about technology, focused on full-stack development and AI tool applications. Through this blog, I share practical experiences from editor configuration to AI-assisted programming.",
+    "highlights": {
+      "writing": {
+        "label": "Technical Writing",
+        "desc": "In-depth articles"
+      },
+      "coding": {
+        "label": "Open Source",
+        "desc": "Active contributor"
+      },
+      "teaching": {
+        "label": "Learning & Sharing",
+        "desc": "Share to learn"
+      }
+    },
+    "skills": "Tech Stack"
   },
   "projects": {
-    "title": "Project Showcase",
-    "viewProject": "View Project"
+    "title": "Projects",
+    "viewProject": "View Details"
   },
   "contact": {
-    "title": "Contact Me",
-    "email": "wudcx@example.com",
-    "website": "https://wudcx.com",
-    "github": "github.com/wudcx",
+    "title": "Contact",
+    "subtitle": "Have questions or suggestions? Feel free to reach out",
+    "email": "Email",
+    "github": "GitHub",
     "namePlaceholder": "Name",
-    "emailPlaceholder": "Email",
-    "messagePlaceholder": "Message",
+    "emailPlaceholder": "Email address",
+    "messagePlaceholder": "Your message...",
     "sendMessage": "Send Message",
     "notification": {
       "fillAll": "Please fill in all required fields",
       "invalidEmail": "Please enter a valid email address",
       "sending": "Sending message...",
-      "success": "Message sent successfully! I will reply to you as soon as possible."
+      "success": "Message sent! I'll get back to you soon."
     }
   },
   "articleDetail": {
@@ -68,8 +117,8 @@
     "loadError": "Error loading article"
   },
   "footer": {
-    "copyright": "© 2026 wudcx. Created with Vue3.",
-    "disclaimer": "This blog is for learning and demonstration purposes only."
+    "copyright": "© 2026 wudcx. Crafted with Vue3.",
+    "disclaimer": "This site is for learning and demonstration purposes only."
   },
   "common": {
     "toggleTheme": "Toggle theme",

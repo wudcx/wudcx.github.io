@@ -3,56 +3,105 @@
     "home": "首页",
     "articles": "文章",
     "about": "关于",
-    "projects": "项目",
+    "features": "学习路径",
     "contact": "联系"
   },
+  "nav": {
+    "startLearning": "开始学习",
+    "learningPaths": "学习路径",
+    "practical": "场景实战",
+    "advanced": "进阶手册"
+  },
   "hero": {
-    "title": "欢迎来到wudcx的个人博客",
-    "subtitle": "记录编程学习、技术探索与项目实践",
-    "readArticles": "阅读文章"
+    "badge": "技术博客 & 教程",
+    "title": "打造你的",
+    "titleHighlight": "开发效率引擎",
+    "subtitle": "从编辑器配置到AI辅助编程，分享实用的技术教程与开发经验，帮助你成为更高效的技术人。",
+    "cta": "开始探索",
+    "ctaSecondary": "了解更多",
+    "stats": {
+      "articles": "篇深度教程",
+      "topics": "个主题领域",
+      "readers": "位读者"
+    }
+  },
+  "features": {
+    "title": "学习路径",
+    "subtitle": "无论你是刚起步还是想提升，这里都有适合你的学习内容",
+    "devEfficiency": {
+      "title": "开发效率",
+      "description": "Neovim配置、终端优化、开发工作流，让你的开发效率提升10倍。",
+      "tags": ["Neovim", "终端", "zsh", "tmux"]
+    },
+    "aiProgramming": {
+      "title": "AI编程助手",
+      "description": "OpenCode等AI工具实战教程，让AI成为你的编程搭档。",
+      "tags": ["OpenCode", "Copilot", "LLM", "Prompt"]
+    },
+    "programming": {
+      "title": "编程学习",
+      "description": "C++、Python、系统设计，从基础到进阶的完整学习路径。",
+      "tags": ["C++", "Python", "系统设计", "算法"]
+    }
   },
   "articles": {
-    "latest": "最新文章",
+    "title": "最新文章",
+    "subtitle": "深度技术文章，实战经验分享",
+    "latest": "最新",
     "readMore": "阅读全文",
-    "viewMore": "查看更多文章",
+    "viewMore": "查看全部文章",
+    "readTime": "分钟阅读",
     "category": {
       "nvim": "编辑器",
-      "opencode": "OpenCode教程",
+      "opencode": "AI工具",
       "cpp": "C++"
     },
     "list": {
       "nvim": {
-        "title": "nvim入门教程",
-        "description": "Neovim是一款现代化的Vim分支，本文带你从零开始配置和使用nvim，包括插件管理、基本操作和LSP集成。"
+        "title": "Neovim从入门到精通",
+        "description": "从零配置现代化的Vim开发环境，包含插件管理、LSP集成、Telescope搜索，让你爱不释手的编辑器。"
       },
       "opencode": {
-        "title": "学习opencode教程",
-        "description": "OpenCode是一个强大的AI编程助手，本教程涵盖其核心功能、使用技巧和实战案例，帮助你快速上手。"
+        "title": "OpenCode完全指南",
+        "description": "深入了解OpenCode的核心功能、使用技巧和实战案例，让你快速掌握AI辅助编程的正确姿势。"
       },
       "cpp": {
-        "title": "c++面试题",
-        "description": "汇总常见C++面试知识点，包括面向对象、内存管理、STL容器和算法等高频考点与详细解析。"
+        "title": "C++面试核心知识点",
+        "description": "涵盖C++高频面试题：内存管理、面向对象、STL容器、算法模板，助你面试一臂之力。"
       }
     }
   },
   "about": {
     "title": "关于我",
-    "description1": "我是一名热爱技术的开发者，专注于全栈开发和AI工具的应用。通过这个博客分享我的技术学习心得和项目实践。",
-    "description2": "我的技术栈包括：JavaScript/TypeScript、React、Node.js、Python和C++。",
-    "skills": "技能"
+    "intro": "热爱技术的开发者，专注于全栈开发与AI工具的应用。通过这个博客，我将分享从编辑器配置到AI辅助编程的实战经验。",
+    "highlights": {
+      "writing": {
+        "label": "技术写作",
+        "desc": "深度技术文章"
+      },
+      "coding": {
+        "label": "开源贡献",
+        "desc": "活跃开源社区"
+      },
+      "teaching": {
+        "label": "教学相长",
+        "desc": "分享即学习"
+      }
+    },
+    "skills": "技术栈"
   },
   "projects": {
     "title": "项目展示",
-    "viewProject": "查看项目"
+    "viewProject": "查看详情"
   },
   "contact": {
     "title": "联系我",
-    "email": "wudcx@example.com",
-    "website": "https://wudcx.com",
-    "github": "github.com/wudcx",
+    "subtitle": "有问题或建议？随时联系",
+    "email": "邮箱",
+    "github": "GitHub",
     "namePlaceholder": "姓名",
-    "emailPlaceholder": "邮箱",
-    "messagePlaceholder": "留言",
+    "emailPlaceholder": "邮箱地址",
+    "messagePlaceholder": "留言内容...",
     "sendMessage": "发送消息",
     "notification": {
       "fillAll": "请填写所有必填字段",
@@ -68,8 +117,8 @@
     "loadError": "加载文章时出错"
   },
   "footer": {
-    "copyright": "© 2026 wudcx. 使用Vue3创建.",
-    "disclaimer": "本博客仅用于学习和演示目的"
+    "copyright": "© 2026 wudcx. 用Vue3精心打造。",
+    "disclaimer": "本站点仅供学习和演示目的"
   },
   "common": {
     "toggleTheme": "切换主题",
