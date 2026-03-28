@@ -39,6 +39,24 @@ OpenCode 可以帮助你审查代码，发现潜在的问题和优化空间。
 
 通过提问和对话的方式，快速掌握新框架的核心概念和使用方法。
 
+## PlantUML 示例
+
+以下是一个简单的时序图示例：
+
+```plantuml
+@startuml
+participant 用户 as User
+participant OpenCode as AI
+participant 代码编辑器 as Editor
+
+User -> AI: 提出编程问题
+AI -> AI: 分析问题上下文
+AI --> User: 返回解决方案
+User -> Editor: 应用解决方案
+Editor --> User: 代码更新完成
+@enduml
+```
+
 ## 总结
 
 OpenCode 是提升开发效率的利器，熟练使用能让你的编程工作更加高效。

@@ -7,6 +7,7 @@ import { computed, onMounted, ref } from 'vue'
 import MarkdownIt from 'markdown-it'
 import markdownItContainer from 'markdown-it-container'
 import { createHighlighter, type Highlighter } from 'shiki'
+import plantumlEncoder from 'plantuml-encoder'
 
 const props = defineProps<{
   source?: string
@@ -90,9 +91,22 @@ md.use(markdownItContainer, 'danger', {
   }
 })
 
+// PlantUML rendering via plantuml-encoder
+function renderPlantUML(code: string): string {
+  const encoded = plantumlEncoder.encode(code)
+  const server = 'https://www.plantuml.com/plantuml/svg/'
+  return `<img src="${server}${encoded}" alt="PlantUML Diagram" class="plantuml-diagram" />`
+}
+
 md.renderer.rules.fence = (tokens: any[], idx: number, options: any, env: any, self: any): string => {
   const token = tokens[idx]
-  const lang = token.info.trim() || 'text'
+  const lang = (token.info || '').trim()
+
+  // Handle plantuml specially
+  if (lang === 'plantuml') {
+    return renderPlantUML(token.content)
+  }
+
   const code = token.content
   return renderCode(code, lang)
 }

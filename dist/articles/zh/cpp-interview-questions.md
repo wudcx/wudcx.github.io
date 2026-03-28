@@ -1,5 +1,3 @@
-# C++ 面试题汇总
-
 ::: tip
 > 本文来源于 [C++ 面试题汇总](https://github.com/wangyang0210/cpp-interview-questions)
 :::
