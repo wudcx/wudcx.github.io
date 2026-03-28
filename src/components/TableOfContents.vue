@@ -111,21 +111,23 @@ onUnmounted(() => {
 <style scoped>
 .toc {
   position: sticky;
-  top: 2rem;
-  max-height: calc(100vh - 4rem);
+  top: 88px;
+  max-height: calc(100vh - 88px - 2rem);
   overflow-y: auto;
   font-size: 0.85rem;
-  padding-left: 1rem;
-  border-left: 1px solid #e0e0e0;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  border-left: 1px solid var(--border-color);
 }
 
 .toc-title {
   font-weight: 600;
-  color: #333;
+  color: var(--text-lighter);
   margin-bottom: 0.75rem;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .toc-list {
@@ -148,22 +150,26 @@ onUnmounted(() => {
 
 .toc-link {
   display: block;
-  padding: 0.25rem 0;
-  color: #646464;
+  padding: 0.3rem 0.5rem;
+  color: var(--text-light);
   text-decoration: none;
   border-left: 2px solid transparent;
-  margin-left: -1px;
-  transition: color 0.2s, border-left-color 0.2s;
+  margin-left: -1rem;
+  padding-right: 0;
+  transition: color 0.2s ease, border-left-color 0.2s ease, background-color 0.2s ease;
+  border-radius: 0 var(--radius) var(--radius) 0;
 }
 
 .toc-link:hover {
-  color: var(--vp-c-brand-1, #0366d6);
-  border-left-color: currentColor;
+  color: var(--primary-color);
+  border-left-color: var(--primary-light);
 }
 
 .toc-link.active {
-  color: var(--vp-c-brand-1, #0366d6);
-  border-left-color: currentColor;
+  color: var(--primary-color);
   font-weight: 500;
+  border-left: 3px solid var(--primary-color);
+  background: var(--primary-light);
+  border-radius: 0 var(--radius) var(--radius) 0;
 }
 </style>

@@ -45,22 +45,22 @@ const { t } = useI18n()
   gap: 1rem;
   margin-top: 3rem;
   padding-top: 1rem;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--border-color);
 }
 
 .article-nav-link {
   flex: 1;
   padding: 1rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
   text-decoration: none;
   transition: border-color 0.2s, box-shadow 0.2s;
   display: block;
 }
 
 .article-nav-link:hover {
-  border-color: #0366d6;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
 }
 
 .article-nav-link.prev {
@@ -73,7 +73,7 @@ const { t } = useI18n()
 
 .nav-label {
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-light);
   margin-bottom: 0.5rem;
 }
 
@@ -88,7 +88,7 @@ const { t } = useI18n()
 
 .nav-title {
   font-weight: 600;
-  color: #333;
+  color: var(--text-color);
 }
 
 .article-nav-placeholder {

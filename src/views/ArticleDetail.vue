@@ -47,7 +47,7 @@
         </div>
 
         <aside class="article-toc">
-          <TableOfContents :content="markdownContent" />
+          <TableOfContents :content="markdownContent" class="toc-sticky" />
         </aside>
       </div>
     </div>
@@ -181,12 +181,17 @@ watch(() => route.params.id, () => {
 .article-main {
   flex: 1;
   min-width: 0;
-  max-width: 800px;
+  max-width: 900px;
 }
 
 .article-toc {
-  width: 200px;
+  width: 220px;
   flex-shrink: 0;
+}
+
+.toc-sticky {
+  position: sticky;
+  top: 88px;
 }
 
 .toc-mobile {

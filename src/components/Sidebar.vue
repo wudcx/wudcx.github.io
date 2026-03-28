@@ -70,38 +70,61 @@ function toggleCategory(category: string) {
 
 <style scoped>
 .sidebar {
-  width: 260px;
-  border-right: 1px solid #e0e0e0;
+  width: 220px;
+  border-right: 1px solid var(--border-color);
   height: calc(100vh - 64px);
   overflow-y: auto;
   position: sticky;
   top: 64px;
   flex-shrink: 0;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
 }
 
 .sidebar-content {
-  padding: 1.5rem;
+  padding: 1rem;
 }
 
 .sidebar-category {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .sidebar-category-header {
   font-weight: 600;
-  font-size: 0.9rem;
-  color: #333;
+  font-size: 0.7rem;
+  color: var(--text-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   margin-bottom: 0.5rem;
+  padding-top: 0.5rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
   user-select: none;
+  border-top: 3px solid transparent;
+  border-image: linear-gradient(90deg, var(--primary-color), var(--secondary-color)) 1;
+}
+
+.sidebar-category-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.sidebar-category-header {
+  position: relative;
 }
 
 .collapse-icon {
   font-size: 0.7rem;
-  color: #999;
+  color: var(--text-lighter);
 }
 
 .sidebar-article-list {
@@ -112,24 +135,40 @@ function toggleCategory(category: string) {
 
 .sidebar-article-link {
   display: block;
-  padding: 0.4rem 0.75rem;
-  font-size: 0.85rem;
-  color: #646464;
+  padding: 0.35rem 0.5rem 0.35rem 1.1rem;
+  font-size: 0.8rem;
+  color: var(--text-light);
   text-decoration: none;
-  border-radius: 4px;
-  border-left: 2px solid transparent;
-  transition: all 0.2s;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid transparent;
+  transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+  position: relative;
+}
+
+.sidebar-article-link::before {
+  content: '○';
+  position: absolute;
+  left: 0.4rem;
+  color: var(--text-lighter);
+  font-size: 0.6rem;
+  transition: color var(--transition-fast);
 }
 
 .sidebar-article-link:hover {
-  color: #333;
-  background: #f5f5f5;
+  color: var(--text-color);
+  background-color: var(--bg-secondary);
 }
 
 .sidebar-article-link.active {
-  color: #0366d6;
-  background: #f0f7ff;
-  border-left-color: #0366d6;
+  color: var(--primary-color);
+  background-color: var(--bg-secondary);
+  border-left-color: var(--primary-color);
+  font-weight: 600;
+}
+
+.sidebar-article-link.active::before {
+  content: '●';
+  color: var(--primary-color);
 }
 
 /* Mobile: drawer mode */
@@ -140,9 +179,10 @@ function toggleCategory(category: string) {
     top: 0;
     height: 100vh;
     z-index: 1000;
-    background: white;
-    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
-    transition: left 0.3s ease;
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+    transition: left var(--transition);
+    border-radius: 0;
   }
   
   .sidebar.open {
@@ -153,12 +193,15 @@ function toggleCategory(category: string) {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 999;
+    opacity: 0;
+    transition: opacity var(--transition);
   }
   
   .sidebar-overlay.open {
     display: block;
+    opacity: 1;
   }
 }
 </style>

@@ -114,7 +114,10 @@
     "backToHome": "Back to Home",
     "loading": "Loading...",
     "articleNotFound": "Article not found",
-    "loadError": "Error loading article"
+    "loadError": "Error loading article",
+    "previousArticle": "Previous Article",
+    "nextArticle": "Next Article",
+    "onThisPage": "On This Page"
   },
   "footer": {
     "copyright": "© 2026 wudcx. Crafted with Vue3.",

@@ -114,7 +114,10 @@
     "backToHome": "返回首页",
     "loading": "加载中...",
     "articleNotFound": "文章未找到",
-    "loadError": "加载文章时出错"
+    "loadError": "加载文章时出错",
+    "previousArticle": "上一篇",
+    "nextArticle": "下一篇",
+    "onThisPage": "页面目录"
   },
   "footer": {
     "copyright": "© 2026 wudcx. 用Vue3精心打造。",
