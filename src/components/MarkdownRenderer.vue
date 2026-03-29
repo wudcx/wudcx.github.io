@@ -147,6 +147,29 @@ onMounted(() => {
   line-height: 1.25;
 }
 
+.markdown-body :deep(h1) {
+  font-size: 1.75rem;
+  font-weight: 700;
+  border-bottom: 1px solid var(--border-color, #e1e4e8);
+  padding-bottom: 0.3em;
+}
+
+.markdown-body :deep(h2) {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-top: 1.5em;
+}
+
+.markdown-body :deep(h3) {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.markdown-body :deep(h4) {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
 .markdown-body :deep(p) {
   margin-top: 0;
   margin-bottom: 16px;
@@ -196,16 +219,52 @@ onMounted(() => {
   margin-bottom: 16px;
 }
 
+/* 表格样式优化 */
+.markdown-body :deep(.table-wrapper) {
+  overflow-x: auto;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  border: 1px solid #e1e4e8;
+}
+
 .markdown-body :deep(table) {
   border-spacing: 0;
   border-collapse: collapse;
-  margin-top: 0;
-  margin-bottom: 16px;
+  width: 100%;
+  margin: 0;
+  font-size: 14px;
 }
 
-.markdown-body :deep(th, td) {
-  padding: 6px 13px;
-  border: 1px solid #dfe2e5;
+.markdown-body :deep(th) {
+  background-color: #f6f8fa;
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 16px;
+  border-bottom: 2px solid #e1e4e8;
+}
+
+.markdown-body :deep(td) {
+  padding: 10px 16px;
+  border-bottom: 1px solid #eaecef;
+  vertical-align: top;
+}
+
+.markdown-body :deep(tr:last-child td) {
+  border-bottom: none;
+}
+
+/* 斑马纹 */
+.markdown-body :deep(tbody tr:nth-child(odd)) {
+  background-color: #ffffff;
+}
+
+.markdown-body :deep(tbody tr:nth-child(even)) {
+  background-color: #f6f8fa;
+}
+
+/* 行悬停效果 */
+.markdown-body :deep(tbody tr:hover) {
+  background-color: #eaecef;
 }
 
 .markdown-body :deep(img) {

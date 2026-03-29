@@ -187,11 +187,14 @@ watch(() => route.params.id, () => {
 .article-toc {
   width: 220px;
   flex-shrink: 0;
+  position: sticky;
+  top: 88px;
+  max-height: calc(100vh - 88px);
+  overflow-y: auto;
 }
 
 .toc-sticky {
-  position: sticky;
-  top: 88px;
+  /* moved styles to .article-toc for true sticky behavior */
 }
 
 .toc-mobile {
