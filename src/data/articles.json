@@ -1,26 +1,85 @@
-[
-  {
-    "id": 1,
-    "category": "articles.category.nvim",
-    "date": "2026-03-22",
-    "title": "articles.list.nvim.title",
-    "description": "articles.list.nvim.description",
-    "filename": "nvim-getting-started"
+{
+  "cpp": {
+    "label": "articles.category.cpp",
+    "icon": "fas fa-code",
+    "items": [
+      {
+        "key": "oop",
+        "items": [
+          {
+            "id": 10,
+            "category": ["cpp", "oop"],
+            "date": "2026-03-22",
+            "title": "articles.list.cpp_oop.title",
+            "description": "articles.list.cpp_oop.description",
+            "filename": "cpp-oop"
+          }
+        ]
+      },
+      {
+        "key": "stl",
+        "label": "articles.category.cpp_stl",
+        "items": [
+          {
+            "id": 11,
+            "category": ["cpp", "stl"],
+            "date": "2026-03-22",
+            "title": "articles.list.cpp_stl.title",
+            "description": "articles.list.cpp_stl.description",
+            "filename": "cpp-stl"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "category": ["cpp"],
+        "date": "2026-03-22",
+        "title": "articles.list.cpp.title",
+        "description": "articles.list.cpp.description",
+        "filename": "cpp-interview-questions"
+      }
+    ]
   },
-  {
-    "id": 2,
-    "category": "articles.category.opencode",
-    "date": "2026-03-22",
-    "title": "articles.list.opencode.title",
-    "description": "articles.list.opencode.description",
-    "filename": "learning-opencode"
+  "distributed": {
+    "label": "articles.category.distributed",
+    "icon": "fas fa-network-wired",
+    "items": [
+      {
+        "id": 13,
+        "category": ["distributed"],
+        "date": "2026-03-22",
+        "title": "articles.list.distributed.title",
+        "description": "articles.list.distributed.description",
+        "filename": "distributed-systems"
+      }
+    ]
   },
-  {
-    "id": 3,
-    "category": "articles.category.cpp",
-    "date": "2026-03-22",
-    "title": "articles.list.cpp.title",
-    "description": "articles.list.cpp.description",
-    "filename": "cpp-interview-questions"
+  "nvim": {
+    "label": "articles.category.nvim",
+    "icon": "fas fa-terminal",
+    "items": [
+      {
+        "id": 1,
+        "category": ["nvim"],
+        "date": "2026-03-22",
+        "title": "articles.list.nvim.title",
+        "description": "articles.list.nvim.description",
+        "filename": "nvim-getting-started"
+      }
+    ]
+  },
+  "opencode": {
+    "label": "articles.category.opencode",
+    "icon": "fas fa-robot",
+    "items": [
+      {
+        "id": 2,
+        "category": ["opencode"],
+        "date": "2026-03-22",
+        "title": "articles.list.opencode.title",
+        "description": "articles.list.opencode.description",
+        "filename": "learning-opencode"
+      }
+    ]
   }
-]
+}

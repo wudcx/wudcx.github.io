@@ -12,7 +12,7 @@
           <div class="article-card-header">
             <span class="article-category">
               <i :class="getCategoryIcon(article.category)"></i>
-              {{ t(article.category) }}
+              {{ t(getCategoryLabel(article.category)) }}
             </span>
             <span class="article-date">{{ article.date }}</span>
           </div>
@@ -44,17 +44,18 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { articles } from '../articles'
+import { articles, articleTree } from '../articles'
 
 const { t } = useI18n()
 
-const getCategoryIcon = (category: string): string => {
-  const icons: Record<string, string> = {
-    'articles.category.nvim': 'fas fa-terminal',
-    'articles.category.opencode': 'fas fa-robot',
-    'articles.category.cpp': 'fas fa-code'
-  }
-  return icons[category] || 'fas fa-file-lines'
+const getCategoryIcon = (category: string[]): string => {
+  const topKey = category[0]
+  return articleTree[topKey]?.icon || 'fas fa-file-lines'
+}
+
+const getCategoryLabel = (category: string[]): string => {
+  const topKey = category[0]
+  return articleTree[topKey]?.label || topKey
 }
 </script>
 

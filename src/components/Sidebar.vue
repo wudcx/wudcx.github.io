@@ -1,23 +1,38 @@
 <template>
   <nav class="sidebar" :class="{ open: isOpen }">
-    <div class="sidebar-overlay" v-if="isOpen" @click="closeSidebar"></div>
+    <div class="sidebar-overlay" v-if="isOpen" @click="$emit('close')"></div>
     <div class="sidebar-content">
-      <div v-for="(articles, category) in groupedArticles" :key="category" class="sidebar-category">
-        <div class="sidebar-category-header" @click="toggleCategory(category)">
-          <span>{{ t(category) }}</span>
-          <span class="collapse-icon">{{ collapsedCategories[category] ? '▶' : '▼' }}</span>
+      <div v-for="(group, topKey) in articleTree" :key="topKey" class="sidebar-category">
+        <div class="sidebar-category-header" @click="toggle(topKey)">
+          <i :class="group.icon"></i>
+          <span>{{ t(group.label) }}</span>
+          <span class="sidebar-collapse-icon">{{ collapsed[topKey] ? '▶' : '▼' }}</span>
         </div>
-        <ul v-show="!collapsedCategories[category]" class="sidebar-article-list">
-          <li v-for="article in articles" :key="article.id">
-            <router-link 
-              :to="`/article/${article.id}`"
-              class="sidebar-article-link"
-              :class="{ active: article.id === currentArticleId }"
-              @click="$emit('close')"
-            >
-              {{ t(article.title) }}
-            </router-link>
-          </li>
+        <ul v-show="!collapsed[topKey]" class="sidebar-article-list">
+          <template v-for="item in group.items" :key="item.key || (item as Article).id">
+            <li v-if="isArticle(item)">
+              <router-link 
+                :to="`/article/${item.id}`"
+                class="sidebar-article-link"
+                :class="{ active: item.id === currentArticleId }"
+                @click="$emit('close')"
+              >
+                {{ t(item.title) }}
+              </router-link>
+            </li>
+            <template v-else>
+              <li v-for="subItem in item.items" :key="(subItem as Article).id">
+                <router-link 
+                  :to="`/article/${(subItem as Article).id}`"
+                  class="sidebar-article-link"
+                  :class="{ active: (subItem as Article).id === currentArticleId }"
+                  @click="$emit('close')"
+                >
+                  {{ t((subItem as Article).title) }}
+                </router-link>
+              </li>
+            </template>
+          </template>
         </ul>
       </div>
     </div>
@@ -25,47 +40,35 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, reactive } from 'vue'
+import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { Article } from '../articles'
+import { articleTree as articleTreeData, type Article, type ArticleGroup } from '../articles'
 
 const props = defineProps<{
-  articles: Article[]
   currentArticleId?: number
   isOpen?: boolean
 }>()
 
-const emit = defineEmits<{
-  (e: 'close'): void
-}>()
+defineEmits<{ (e: 'close'): void }>()
 
 const { t } = useI18n()
 
-// Group articles by category
-const groupedArticles = computed(() => {
-  const groups: Record<string, Article[]> = {}
-  for (const article of props.articles) {
-    if (!groups[article.category]) {
-      groups[article.category] = []
-    }
-    groups[article.category].push(article)
-  }
-  return groups
-})
+const articleTree = articleTreeData
 
-// Track collapsed state for each category
-const collapsedCategories = reactive<Record<string, boolean>>({})
+const topLevelKeys = computed(() => Object.keys(articleTree))
 
-// Initialize all categories as expanded
-for (const category in groupedArticles.value) {
-  collapsedCategories[category] = false
+const collapsed = reactive<Record<string, boolean>>({})
+for (const key of topLevelKeys.value) {
+  collapsed[key] = false
 }
 
-function toggleCategory(category: string) {
-  collapsedCategories[category] = !collapsedCategories[category]
+function toggle(key: string) {
+  collapsed[key] = !collapsed[key]
 }
 
-
+function isArticle(item: Article | ArticleGroup): item is Article {
+  return 'filename' in item
+}
 </script>
 
 <style scoped>
@@ -94,36 +97,23 @@ function toggleCategory(category: string) {
   font-weight: 600;
   font-size: 0.7rem;
   color: var(--text-color);
-  text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 0.5rem;
   padding-top: 0.5rem;
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
   user-select: none;
-  border-top: 3px solid transparent;
-  border-image: linear-gradient(90deg, var(--primary-color), var(--secondary-color)) 1;
 }
 
-.sidebar-category-header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-  border-radius: var(--radius) var(--radius) 0 0;
+.sidebar-category-header i {
+  font-size: 0.75rem;
 }
 
-.sidebar-category-header {
-  position: relative;
-}
-
-.collapse-icon {
-  font-size: 0.7rem;
+.sidebar-collapse-icon {
+  margin-left: auto;
+  font-size: 0.6rem;
   color: var(--text-lighter);
 }
 
@@ -171,7 +161,6 @@ function toggleCategory(category: string) {
   color: var(--primary-color);
 }
 
-/* Mobile: drawer mode */
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;

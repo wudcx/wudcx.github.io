@@ -54,7 +54,10 @@
     "category": {
       "nvim": "Editor",
       "opencode": "AI Tools",
-      "cpp": "C++"
+      "cpp": "C++",
+      "cpp_oop": "OOP",
+      "cpp_stl": "STL",
+      "distributed": "Distributed Systems"
     },
     "list": {
       "nvim": {
@@ -68,6 +71,18 @@
       "cpp": {
         "title": "C++ Interview Essentials",
         "description": "Covers high-frequency C++ interview topics: memory management, OOP, STL containers, algorithm templates."
+      },
+      "cpp_oop": {
+        "title": "C++ OOP",
+        "description": "Encapsulation, inheritance, polymorphism, vtable, smart pointers and more."
+      },
+      "cpp_stl": {
+        "title": "C++ STL",
+        "description": "STL container internals: vector, unordered_map, shared_ptr diagrams."
+      },
+      "distributed": {
+        "title": "Distributed Systems",
+        "description": "CAP theorem, BASE theory, 2PC, Raft protocol and more."
       }
     }
   },

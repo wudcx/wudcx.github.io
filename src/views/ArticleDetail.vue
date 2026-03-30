@@ -22,7 +22,7 @@
 
       <div v-else class="article-layout">
         <Sidebar
-          :articles="articles"
+          :article-tree="articleTree"
           :current-article-id="article?.id"
           :is-open="sidebarOpen"
           @close="sidebarOpen = false"
@@ -32,7 +32,7 @@
           <header class="article-header">
             <h1 class="article-title">{{ t(article?.title ?? '') }}</h1>
             <div class="article-meta">
-              <span class="category">{{ t(article?.category ?? '') }}</span>
+              <span class="category">{{ t(getCategoryLabel(article?.category ?? [])) }}</span>
               <span class="date">{{ article?.date }}</span>
             </div>
           </header>
@@ -62,7 +62,7 @@ import MarkdownRenderer from '../components/MarkdownRenderer.vue'
 import TableOfContents from '../components/TableOfContents.vue'
 import ArticleNavigation from '../components/ArticleNavigation.vue'
 import Sidebar from '../components/Sidebar.vue'
-import { articles, type Article } from '../articles'
+import { articles, articleTree, type Article } from '../articles'
 
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -71,6 +71,11 @@ const sidebarOpen = ref(false)
 const error = ref('')
 const article = ref<Article | null>(null)
 const markdownContent = ref('')
+
+const getCategoryLabel = (category: string[]): string => {
+  const topKey = category[0]
+  return articleTree[topKey]?.label || topKey
+}
 
 const currentIndex = computed(() => {
   if (!article.value) return -1

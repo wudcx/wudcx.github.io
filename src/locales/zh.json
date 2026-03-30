@@ -54,7 +54,10 @@
     "category": {
       "nvim": "编辑器",
       "opencode": "AI工具",
-      "cpp": "C++"
+      "cpp": "C++",
+      "cpp_oop": "面向对象",
+      "cpp_stl": "标准库",
+      "distributed": "分布式系统"
     },
     "list": {
       "nvim": {
@@ -68,6 +71,18 @@
       "cpp": {
         "title": "C++面试核心知识点",
         "description": "涵盖C++高频面试题：内存管理、面向对象、STL容器、算法模板，助你面试一臂之力。"
+      },
+      "cpp_oop": {
+        "title": "C++面向对象",
+        "description": "封装、继承、多态、虚函数表、智能指针等核心概念图解。"
+      },
+      "cpp_stl": {
+        "title": "C++标准库",
+        "description": "STL容器底层实现：vector、unordered_map、shared_ptr等图解。"
+      },
+      "distributed": {
+        "title": "分布式系统",
+        "description": "CAP理论、BASE理论、2PC、Raft协议等分布式核心知识图解。"
       }
     }
   },
