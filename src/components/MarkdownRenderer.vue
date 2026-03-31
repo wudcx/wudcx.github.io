@@ -138,6 +138,7 @@ onMounted(() => {
   font-size: 16px;
   line-height: 1.6;
   word-wrap: break-word;
+  color: #24292e;
 }
 
 .markdown-body :deep(h1, h2, h3, h4, h5, h6) {
@@ -173,6 +174,7 @@ onMounted(() => {
 .markdown-body :deep(p) {
   margin-top: 0;
   margin-bottom: 16px;
+  color: #24292e;
 }
 
 .markdown-body :deep(a) {
@@ -217,6 +219,7 @@ onMounted(() => {
   padding-left: 2em;
   margin-top: 0;
   margin-bottom: 16px;
+  color: #24292e;
 }
 
 /* 表格样式优化 */
