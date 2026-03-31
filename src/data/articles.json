@@ -1,39 +1,28 @@
 {
   "cpp": {
-    "label": "图解面试题",
+    "label": "articles.category.cpp",
     "icon": "fas fa-code",
     "items": [
-      {
-        "key": "oop",
-        "items": [
-          {
-            "category": ["cpp", "oop"],
-            "date": "2026-03-22",
-            "title": "articles.list.cpp_oop.title",
-            "description": "articles.list.cpp_oop.description",
-            "filename": "cpp-oop"
-          }
-        ]
-      },
-      {
-        "key": "stl",
-        "label": "articles.category.cpp_stl",
-        "items": [
-          {
-            "category": ["cpp", "stl"],
-            "date": "2026-03-22",
-            "title": "articles.list.cpp_stl.title",
-            "description": "articles.list.cpp_stl.description",
-            "filename": "cpp-stl"
-          }
-        ]
-      },
       {
         "category": ["cpp"],
         "date": "2026-03-22",
         "title": "articles.list.cpp_language_fundamentals.title",
         "description": "articles.list.cpp_language_fundamentals.description",
         "filename": "cpp-language-fundamentals"
+      },
+      {
+        "category": ["cpp"],
+        "date": "2026-03-22",
+        "title": "articles.list.cpp_oop.title",
+        "description": "articles.list.cpp_oop.description",
+        "filename": "cpp-oop"
+      },
+      {
+        "category": ["cpp", "stl"],
+        "date": "2026-03-22",
+        "title": "articles.list.cpp_stl.title",
+        "description": "articles.list.cpp_stl.description",
+        "filename": "cpp-stl"
       },
       {
         "category": ["cpp"],

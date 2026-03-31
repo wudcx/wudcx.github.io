@@ -21,6 +21,7 @@
               </router-link>
             </li>
             <template v-else>
+              <div class="sidebar-subgroup-header">{{ t(item.label) }}</div>
               <li v-for="subItem in item.items" :key="(subItem as Article).filename">
                 <router-link 
                   :to="`/article/${(subItem as Article).filename}`"
@@ -121,6 +122,16 @@ function isArticle(item: Article | ArticleGroup): item is Article {
   list-style: none;
   padding: 0;
   margin: 0;
+}
+
+.sidebar-subgroup-header {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-lighter);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.5rem 0.5rem 0.25rem 1.1rem;
+  margin-top: 0.25rem;
 }
 
 .sidebar-article-link {
