@@ -85,70 +85,243 @@ C++ polymorphism relies on **vtables (virtual function tables)** and **vptrs (vi
 
 **PlantUML Diagram:**
 
+**1. Class Definition & vtable Generation:**
+
 ```plantuml
 @startuml
 skinparam dpi 160
 skinparam shadowing false
-skinparam roundcorner 15
+skinparam roundcorner 12
+skinparam ArrowColor #333
+skinparam defaultTextAlignment center
+
+title **Polymorphism - Class Definition & vtable**
+
+package "Code Level" {
+  class "Base" as BASE #E8F5E9 {
+    + virtual void func1()
+    + virtual void func2()
+    + int data
+  }
+
+  class "Derived" as DERIVED #E3F2FD {
+    + void func1() override  // Override
+    + int extraData
+  }
+
+  BASE <|-- DERIVED : Inheritance
+}
+
+package "Compiled - vtable Generation" {
+  class "Base::vtable" as B_VTBL #FFF3E0 {
+    + slot[0] → Base::func1 address
+    + slot[1] → Base::func2 address
+  }
+
+  class "Derived::vtable" as D_VTBL #FCE4EC {
+    + slot[0] → Derived::func1 address  // Overridden
+    + slot[1] → Base::func2 address     // Inherited
+  }
+
+  note bottom of B_VTBL
+    **Class-level data (shared by all objects)**
+  end note
+
+  note bottom of D_VTBL
+    ** Derived overrides func1**
+  end note
+}
+
+note "Each class with virtual functions has its own vtable" as N1 #FFCCCC
+
+@enduml
+```
+
+**2. Object Memory Layout & vptr:**
+
+```plantuml
+@startuml
+skinparam dpi 160
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam ArrowColor #333
+skinparam noteTextAlignment left
+
+title **Polymorphism - Object Memory Layout & vptr**
+
+together {
+  object "Base Object" as BASE_OBJ #E8F5E9 {
+    {static} vptr ──────────────►
+    data: int = 10
+  }
+
+  object "Derived Object" as DERIVED_OBJ #E3F2FD {
+    {static} vptr ──────────────►
+    data: int = 10
+    extraData: int = 20
+  }
+}
+
+together {
+  class "Base::vtable" as B_VTBL #FFF3E0 {
+    + slot[0]: 0x0040A100 → Base::func1()
+    + slot[1]: 0x0040A108 → Base::func2()
+  }
+
+  class "Derived::vtable" as D_VTBL #FCE4EC {
+    + slot[0]: 0x0040B200 → Derived::func1()  ← Overridden!
+    + slot[1]: 0x0040A108 → Base::func2()      ← Inherited
+  }
+}
+
+BASE_OBJ -right-> B_VTBL : after new Base()\nvptr points to
+DERIVED_OBJ -right-> D_VTBL : after new Derived()\nvptr points to
+
+note bottom of BASE_OBJ
+  sizeof(Base) = 8 bytes\n(4 vptr + 4 data)
+end note
+
+note bottom of DERIVED_OBJ
+  sizeof(Derived) = 12 bytes\n(4 vptr + 4 data + 4 extraData)
+end note
+
+legend right
+  | Key Point | Description |
+  |------|------|
+  | vptr | First byte of object, points to class vtable |
+  | vtable | Class-shared, stores function pointer array |
+  | slot[i] | Entry address of i-th virtual function |
+endlegend
+
+@enduml
+```
+
+**3. Complete Dynamic Binding Flow:**
+
+```plantuml
+@startuml
+skinparam dpi 160
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam sequenceArrowThickness 1.5
+skinparam sequenceMessageAlign center
+skinparam ParticipantPadding 18
+skinparam BoxPadding 20
+skinparam ArrowColor #333
+skinparam SequenceLifeLineBorderColor #555
+skinparam SequenceLifeLineBackgroundColor #F8F8F8
+skinparam NoteBackgroundColor #FFFFCC
+skinparam NoteBorderColor #AA0
+skinparam ParticipantFontSize 12
+skinparam ActorFontSize 12
+
+title **Polymorphism - Complete Dynamic Binding Flow**
+
+actor "Developer" as DEV #FFF3E0
+participant "Base* ptr" as PTR #E8F5E9
+participant "Object Memory\nvptr" as VPTR #E3F2FD
+participant "vtable\n(Class Data)" as VTBL #FFF3E0
+participant "Actual Function" as FUNC #FCE4EC
+
+ DEV     ->  PTR     : Base* ptr = new Derived()\nptr->func1()  // Which one?
+
+ activate PTR
+
+ note over PTR #FFFFFF
+   Static type of ptr: Base*
+   Dynamic type of ptr: Derived*
+ end note
+
+ PTR     ->  VPTR    : 1. Read ptr->vptr\n(Hidden pointer at object start)
+ activate VPTR
+
+ VPTR    ->  VTBL     : 2. Find vtable via vptr\n(Which class?)
+ activate VTBL
+
+ note over VTBL #FFFFFF
+   new Derived() creates Derived object
+   So vptr points to Derived::vtable
+ end note
+
+ VTBL    ->  VTBL     : 3. Look up slot[0]\n(0th virtual function)
+ note over VTBL #FFFFFF
+   Derived::vtable[0] = Derived::func1 address\n(It was overridden!)
+ end note
+
+ VTBL    ->  FUNC     : 4. Jump to 0x0040B200\nDerived::func1()
+ activate FUNC
+
+ FUNC    -->  DEV      : 5. Execute Derived::func1()\nNot Base::func1()!
+ deactivate FUNC
+
+ deactivate VTBL
+ deactivate VPTR
+ deactivate PTR
+
+legend center
+  | Step | Action | Key Instruction |
+  |------|------|---------|
+  | 1 | Read vptr | mov eax, [ptr] |
+  | 2 | Find vtable | eax = [eax] |
+  | 3 | Lookup slot | eax = [eax + slot*4] |
+  | 4 | Jump | call [eax] |
+endlegend
+
+@enduml
+```
+
+**4. vptr Changes During Construction/Destruction:**
+
+```plantuml
+@startuml
+skinparam dpi 160
+skinparam shadowing false
+skinparam roundcorner 12
 skinparam sequenceArrowThickness 1.3
 skinparam sequenceMessageAlign center
 skinparam ParticipantPadding 15
 skinparam BoxPadding 15
-skinparam ArrowColor #666
-skinparam ArrowThickness 1.2
-skinparam SequenceLifeLineBorderColor #AAAAAA
+skinparam ArrowColor #333
+skinparam SequenceLifeLineBorderColor #555
 skinparam SequenceLifeLineBackgroundColor #F8F8F8
-skinparam NoteBackgroundColor #FFFFFB
-skinparam NoteBorderColor #AAA
-skinparam ParticipantFontSize 13
-skinparam ActorFontSize 14
-skinparam SequenceDividerFontSize 14
 
-title **多态实现原理 / Polymorphism Implementation**
+title **Polymorphism - vptr Changes During Construction**
 
-package "对象内存布局 / Object Memory Layout" {
-  object "对象 obj" as OBJ #E8F5E9 {
-    {field} vptr (隐藏) → 指向 vtable
-    {field} 成员变量1
-    {field} 成员变量2
-  }
-}
+participant "Derived Object\nMemory Layout" as OBJ #E8F5E9
+participant "Base Constructor" as BASE_CTOR #E3F2FD
+participant "Derived Constructor" as DERIVED_CTOR #FFF3E0
 
-package "虚函数表 / vtable" {
-  class "Base vtable" as BASE_VTBL #E3F2FD {
-    + slot[0]: Base::func1()
-    + slot[1]: Base::func2()
-  }
-  
-  class "Derived vtable" as DERIVED_VTBL #E3F2FD {
-    + slot[0]: Derived::func1() ← 重写
-    + slot[1]: Base::func2()
-  }
-}
+note over OBJ #FFFFFF
+  Initial state: Memory allocated\nvptr uninitialized
+end note
 
-package "动态绑定过程 / Dynamic Binding" {
-  actor "调用者" as CALLER #FFF3E0
-  participant "Base* ptr" as PTR #FCE4EC
-  participant "vptr 查找" as VLOOKUP #EAF5FF
-  participant "vtable 派发" as VDISPATCH #EAF5FF
-  participant "实际函数" as FUNC #F8F8F8
-}
+BASE_CTOR -> BASE_CTOR : Set vptr → Base::vtable
+note right of BASE_CTOR #E8F5E9
+  **Base Construction Phase**
+  Calling Base::func() → Base version
+  (Derived part not yet constructed!)
+end note
 
-== 动态绑定流程 ==
+DERIVED_CTOR -> DERIVED_CTOR : Set vptr → Derived::vtable
+note right of DERIVED_CTOR #E3F2FD
+  **Derived Construction Phase**
+  vptr updated to point to Derived::vtable
+  Now calling Derived::func() → Derived version
+end note
 
-CALLER -> PTR : ptr->virtualFunc()
-PTR -> VLOOKUP : 通过 vptr 找到 vtable
-VLOOKUP -> VDISPATCH : 查找 slot[index]
-VDISPATCH -> FUNC : 跳转到函数地址
-FUNC --> CALLER : 执行实际函数
+note over OBJ #FFFFFF
+  **Destruction order is reversed**
+  ~Derived(): vptr → Derived::vtable
+  ~Base():    vptr → Base::vtable
+end note
 
-legend center
-| 概念 | 说明 |
-|------|------|
-| vptr | 对象中的隐藏指针，指向 vtable |
-| vtable | 类级别的函数指针数组 |
-| slot | vtable 中每个虚函数的索引 |
-| 动态绑定 | 运行时通过 vptr 查找实际函数 |
+legend right
+  | Phase | vptr Points To | Virtual Function Target |
+  |------|----------|--------------|
+  | During Base construction | Base::vtable | Base version |
+  | During Derived construction | Derived::vtable | Derived version |
+  | During ~Derived() | Derived::vtable | Derived version |
+  | During ~Base() | Base::vtable | Base version |
 endlegend
 
 @enduml
