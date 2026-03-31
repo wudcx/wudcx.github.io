@@ -23,7 +23,7 @@
       <div v-else class="article-layout">
         <Sidebar
           :article-tree="articleTree"
-          :current-article-id="article?.id"
+          :current-article-filename="article?.filename"
           :is-open="sidebarOpen"
           @close="sidebarOpen = false"
         />
@@ -99,8 +99,8 @@ const loadArticle = async () => {
   error.value = ''
 
   try {
-    const articleId = parseInt(route.params.id as string)
-    const foundArticle = articles.find(a => a.id === articleId)
+    const articleFilename = route.params.filename as string
+    const foundArticle = articles.find(a => a.filename === articleFilename)
 
     if (!foundArticle) {
       error.value = t('articleDetail.articleNotFound')
@@ -127,7 +127,7 @@ onMounted(() => {
   loadArticle()
 })
 
-watch(() => route.params.id, () => {
+watch(() => route.params.filename, () => {
   loadArticle()
 })
 </script>

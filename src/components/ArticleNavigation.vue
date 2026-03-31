@@ -2,7 +2,7 @@
   <nav v-if="prev || next" class="article-nav">
     <router-link
       v-if="prev"
-      :to="`/article/${prev.id}`"
+      :to="`/article/${prev.filename}`"
       class="article-nav-link prev"
     >
       <div class="nav-label">
@@ -14,7 +14,7 @@
 
     <router-link
       v-if="next"
-      :to="`/article/${next.id}`"
+      :to="`/article/${next.filename}`"
       class="article-nav-link next"
     >
       <div class="nav-label">

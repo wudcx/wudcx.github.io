@@ -12,9 +12,9 @@
           <template v-for="item in group.items" :key="item.key || (item as Article).id">
             <li v-if="isArticle(item)">
               <router-link 
-                :to="`/article/${item.id}`"
+                :to="`/article/${item.filename}`"
                 class="sidebar-article-link"
-                :class="{ active: item.id === currentArticleId }"
+                :class="{ active: item.filename === currentArticleFilename }"
                 @click="$emit('close')"
               >
                 {{ t(item.title) }}
@@ -23,9 +23,9 @@
             <template v-else>
               <li v-for="subItem in item.items" :key="(subItem as Article).id">
                 <router-link 
-                  :to="`/article/${(subItem as Article).id}`"
+                  :to="`/article/${(subItem as Article).filename}`"
                   class="sidebar-article-link"
-                  :class="{ active: (subItem as Article).id === currentArticleId }"
+                  :class="{ active: (subItem as Article).filename === currentArticleFilename }"
                   @click="$emit('close')"
                 >
                   {{ t((subItem as Article).title) }}
@@ -45,7 +45,7 @@ import { useI18n } from 'vue-i18n'
 import { articleTree as articleTreeData, type Article, type ArticleGroup } from '../articles'
 
 const props = defineProps<{
-  currentArticleId?: number
+  currentArticleFilename?: string
   isOpen?: boolean
 }>()
 

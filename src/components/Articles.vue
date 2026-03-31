@@ -25,7 +25,7 @@
               <i class="fas fa-clock"></i>
               8 {{ t('articles.readTime') }}
             </span>
-            <router-link :to="'/article/' + article.id" class="read-more">
+            <router-link :to="'/article/' + article.filename" class="read-more">
               {{ t('articles.readMore') }}
               <i class="fas fa-arrow-right"></i>
             </router-link>

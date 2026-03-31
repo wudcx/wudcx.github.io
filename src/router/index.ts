@@ -16,7 +16,7 @@ const routes: RouteRecordRaw[] = [
     component: ArticlesView
   },
   {
-    path: '/article/:id',
+    path: '/article/:filename',
     name: 'ArticleDetail',
     component: ArticleDetail,
     props: true

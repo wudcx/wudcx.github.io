@@ -24,7 +24,7 @@
               </div>
               <h2>{{ t(article.title) }}</h2>
               <p>{{ t(article.description) }}</p>
-              <router-link :to="'/article/' + article.id" class="read-more">
+              <router-link :to="'/article/' + article.filename" class="read-more">
                 {{ t('articles.readMore') }}
                 <i class="fas fa-arrow-right"></i>
               </router-link>
