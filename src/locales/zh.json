@@ -54,10 +54,9 @@
     "category": {
       "nvim": "编辑器",
       "opencode": "AI工具",
-      "cpp": "C++",
+      "cpp": "图解面试题",
       "cpp_oop": "面向对象",
-      "cpp_stl": "标准库",
-      "distributed": "分布式系统"
+      "cpp_stl": "标准库"
     },
     "list": {
       "nvim": {
@@ -83,6 +82,46 @@
       "distributed": {
         "title": "分布式系统",
         "description": "CAP理论、BASE理论、2PC、Raft协议等分布式核心知识图解。"
+      },
+      "cpp_language_fundamentals": {
+        "title": "C++语言基础",
+        "description": "语法糖、内存模型、编译链接、模板元编程等核心概念图解。"
+      },
+      "database": {
+        "title": "数据库",
+        "description": "索引结构、事务隔离级别、SQL优化、分布式数据库等核心知识图解。"
+      },
+      "design_patterns": {
+        "title": "设计模式",
+        "description": "单例、工厂、策略、观察者等常用设计模式图解。"
+      },
+      "docker_k8s": {
+        "title": "Docker与Kubernetes",
+        "description": "容器化技术、K8s架构、Pod调度、Service网络等核心知识图解。"
+      },
+      "dsa": {
+        "title": "数据结构与算法",
+        "description": "数组、链表、树、图、排序、查找等核心知识图解。"
+      },
+      "etcd": {
+        "title": "etcd",
+        "description": "Raft协议实现、KV存储、Watch机制、分布式锁等核心知识图解。"
+      },
+      "grpc": {
+        "title": "gRPC",
+        "description": "Protocol Buffer、HTTP/2、流式调用、拦截器等核心知识图解。"
+      },
+      "kafka": {
+        "title": "Kafka",
+        "description": "分区策略、消费者组、幂等性、事务等核心知识图解。"
+      },
+      "os": {
+        "title": "操作系统",
+        "description": "进程线程、内存管理、文件系统、IO模型等核心知识图解。"
+      },
+      "system_design": {
+        "title": "系统设计",
+        "description": "高并发、高可用、负载均衡、缓存策略等系统设计核心知识图解。"
       }
     }
   },

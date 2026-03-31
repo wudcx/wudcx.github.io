@@ -1,6 +1,6 @@
 {
   "cpp": {
-    "label": "articles.category.cpp",
+    "label": "图解面试题",
     "icon": "fas fa-code",
     "items": [
       {
@@ -31,26 +31,84 @@
         ]
       },
       {
-        "id": 3,
+        "id": 14,
         "category": ["cpp"],
         "date": "2026-03-22",
-        "title": "articles.list.cpp.title",
-        "description": "articles.list.cpp.description",
-        "filename": "cpp-interview-questions"
-      }
-    ]
-  },
-  "distributed": {
-    "label": "articles.category.distributed",
-    "icon": "fas fa-network-wired",
-    "items": [
+        "title": "articles.list.cpp_language_fundamentals.title",
+        "description": "articles.list.cpp_language_fundamentals.description",
+        "filename": "cpp-language-fundamentals"
+      },
       {
-        "id": 13,
-        "category": ["distributed"],
+        "id": 15,
+        "category": ["cpp"],
         "date": "2026-03-22",
-        "title": "articles.list.distributed.title",
-        "description": "articles.list.distributed.description",
-        "filename": "distributed-systems"
+        "title": "articles.list.database.title",
+        "description": "articles.list.database.description",
+        "filename": "database"
+      },
+      {
+        "id": 16,
+        "category": ["cpp"],
+        "date": "2026-03-22",
+        "title": "articles.list.design_patterns.title",
+        "description": "articles.list.design_patterns.description",
+        "filename": "design-patterns"
+      },
+      {
+        "id": 17,
+        "category": ["cpp"],
+        "date": "2026-03-22",
+        "title": "articles.list.docker_k8s.title",
+        "description": "articles.list.docker_k8s.description",
+        "filename": "docker-k8s"
+      },
+      {
+        "id": 18,
+        "category": ["cpp"],
+        "date": "2026-03-22",
+        "title": "articles.list.dsa.title",
+        "description": "articles.list.dsa.description",
+        "filename": "dsa"
+      },
+      {
+        "id": 19,
+        "category": ["cpp"],
+        "date": "2026-03-22",
+        "title": "articles.list.etcd.title",
+        "description": "articles.list.etcd.description",
+        "filename": "etcd"
+      },
+      {
+        "id": 20,
+        "category": ["cpp"],
+        "date": "2026-03-22",
+        "title": "articles.list.grpc.title",
+        "description": "articles.list.grpc.description",
+        "filename": "grpc"
+      },
+      {
+        "id": 21,
+        "category": ["cpp"],
+        "date": "2026-03-22",
+        "title": "articles.list.kafka.title",
+        "description": "articles.list.kafka.description",
+        "filename": "kafka"
+      },
+      {
+        "id": 22,
+        "category": ["cpp"],
+        "date": "2026-03-22",
+        "title": "articles.list.os.title",
+        "description": "articles.list.os.description",
+        "filename": "os"
+      },
+      {
+        "id": 23,
+        "category": ["cpp"],
+        "date": "2026-03-22",
+        "title": "articles.list.system_design.title",
+        "description": "articles.list.system_design.description",
+        "filename": "system-design"
       }
     ]
   },

@@ -54,10 +54,9 @@
     "category": {
       "nvim": "Editor",
       "opencode": "AI Tools",
-      "cpp": "C++",
+      "cpp": "Interview Diagrams",
       "cpp_oop": "OOP",
-      "cpp_stl": "STL",
-      "distributed": "Distributed Systems"
+      "cpp_stl": "STL"
     },
     "list": {
       "nvim": {
@@ -83,6 +82,46 @@
       "distributed": {
         "title": "Distributed Systems",
         "description": "CAP theorem, BASE theory, 2PC, Raft protocol and more."
+      },
+      "cpp_language_fundamentals": {
+        "title": "C++ Language Fundamentals",
+        "description": "Syntax sugar, memory model, compilation, linking, template metaprogramming and more."
+      },
+      "database": {
+        "title": "Database",
+        "description": "Index structures, transaction isolation levels, SQL optimization, distributed databases and more."
+      },
+      "design_patterns": {
+        "title": "Design Patterns",
+        "description": "Singleton, Factory, Strategy, Observer and common patterns diagrams."
+      },
+      "docker_k8s": {
+        "title": "Docker & Kubernetes",
+        "description": "Containerization, K8s architecture, Pod scheduling, Service networking and more."
+      },
+      "dsa": {
+        "title": "Data Structures & Algorithms",
+        "description": "Arrays, linked lists, trees, graphs, sorting, searching and more."
+      },
+      "etcd": {
+        "title": "etcd",
+        "description": "Raft implementation, KV store, Watch mechanism, distributed locks and more."
+      },
+      "grpc": {
+        "title": "gRPC",
+        "description": "Protocol Buffer, HTTP/2, streaming, interceptors and more."
+      },
+      "kafka": {
+        "title": "Kafka",
+        "description": "Partition strategy, consumer groups, idempotency, transactions and more."
+      },
+      "os": {
+        "title": "Operating System",
+        "description": "Process & threads, memory management, file system, IO models and more."
+      },
+      "system_design": {
+        "title": "System Design",
+        "description": "High concurrency, high availability, load balancing, caching strategies and more."
       }
     }
   },
