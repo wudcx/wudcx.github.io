@@ -8,7 +8,7 @@
         </div>
       </div>
       <div class="articles-grid">
-        <article class="article-card" v-for="article in articles" :key="article.id">
+        <article class="article-card" v-for="article in articles" :key="article.filename">
           <div class="article-card-header">
             <span class="article-category">
               <i :class="getCategoryIcon(article.category)"></i>

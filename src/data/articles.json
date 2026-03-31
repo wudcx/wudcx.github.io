@@ -7,7 +7,6 @@
         "key": "oop",
         "items": [
           {
-            "id": 10,
             "category": ["cpp", "oop"],
             "date": "2026-03-22",
             "title": "articles.list.cpp_oop.title",
@@ -21,7 +20,6 @@
         "label": "articles.category.cpp_stl",
         "items": [
           {
-            "id": 11,
             "category": ["cpp", "stl"],
             "date": "2026-03-22",
             "title": "articles.list.cpp_stl.title",
@@ -31,7 +29,6 @@
         ]
       },
       {
-        "id": 14,
         "category": ["cpp"],
         "date": "2026-03-22",
         "title": "articles.list.cpp_language_fundamentals.title",
@@ -39,7 +36,6 @@
         "filename": "cpp-language-fundamentals"
       },
       {
-        "id": 15,
         "category": ["cpp"],
         "date": "2026-03-22",
         "title": "articles.list.database.title",
@@ -47,7 +43,6 @@
         "filename": "database"
       },
       {
-        "id": 16,
         "category": ["cpp"],
         "date": "2026-03-22",
         "title": "articles.list.design_patterns.title",
@@ -55,7 +50,6 @@
         "filename": "design-patterns"
       },
       {
-        "id": 17,
         "category": ["cpp"],
         "date": "2026-03-22",
         "title": "articles.list.docker_k8s.title",
@@ -63,7 +57,6 @@
         "filename": "docker-k8s"
       },
       {
-        "id": 18,
         "category": ["cpp"],
         "date": "2026-03-22",
         "title": "articles.list.dsa.title",
@@ -71,7 +64,6 @@
         "filename": "dsa"
       },
       {
-        "id": 19,
         "category": ["cpp"],
         "date": "2026-03-22",
         "title": "articles.list.etcd.title",
@@ -79,7 +71,6 @@
         "filename": "etcd"
       },
       {
-        "id": 20,
         "category": ["cpp"],
         "date": "2026-03-22",
         "title": "articles.list.grpc.title",
@@ -87,7 +78,6 @@
         "filename": "grpc"
       },
       {
-        "id": 21,
         "category": ["cpp"],
         "date": "2026-03-22",
         "title": "articles.list.kafka.title",
@@ -95,7 +85,6 @@
         "filename": "kafka"
       },
       {
-        "id": 22,
         "category": ["cpp"],
         "date": "2026-03-22",
         "title": "articles.list.os.title",
@@ -103,7 +92,6 @@
         "filename": "os"
       },
       {
-        "id": 23,
         "category": ["cpp"],
         "date": "2026-03-22",
         "title": "articles.list.system_design.title",
@@ -117,7 +105,6 @@
     "icon": "fas fa-terminal",
     "items": [
       {
-        "id": 1,
         "category": ["nvim"],
         "date": "2026-03-22",
         "title": "articles.list.nvim.title",
@@ -131,7 +118,6 @@
     "icon": "fas fa-robot",
     "items": [
       {
-        "id": 2,
         "category": ["opencode"],
         "date": "2026-03-22",
         "title": "articles.list.opencode.title",

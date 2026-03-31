@@ -9,7 +9,7 @@
           <span class="sidebar-collapse-icon">{{ collapsed[topKey] ? '▶' : '▼' }}</span>
         </div>
         <ul v-show="!collapsed[topKey]" class="sidebar-article-list">
-          <template v-for="item in group.items" :key="item.key || (item as Article).id">
+          <template v-for="item in group.items" :key="item.key || (item as Article).filename">
             <li v-if="isArticle(item)">
               <router-link 
                 :to="`/article/${item.filename}`"
@@ -21,7 +21,7 @@
               </router-link>
             </li>
             <template v-else>
-              <li v-for="subItem in item.items" :key="(subItem as Article).id">
+              <li v-for="subItem in item.items" :key="(subItem as Article).filename">
                 <router-link 
                   :to="`/article/${(subItem as Article).filename}`"
                   class="sidebar-article-link"

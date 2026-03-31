@@ -6,8 +6,7 @@ import articleTreeData from './data/articles.json'
  * 文章条目（叶子节点）
  */
 export interface Article {
-  id: number
-  category: string[]        // 分类路径，如 ["cpp", "oop"]
+  category: string[]
   date: string
   title: string
   description: string

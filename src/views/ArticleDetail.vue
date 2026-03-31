@@ -79,7 +79,7 @@ const getCategoryLabel = (category: string[]): string => {
 
 const currentIndex = computed(() => {
   if (!article.value) return -1
-  return articles.findIndex(a => a.id === article.value?.id)
+  return articles.findIndex(a => a.filename === article.value?.filename)
 })
 
 const prevArticle = computed(() => {

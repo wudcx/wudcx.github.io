@@ -9,7 +9,7 @@
     <section class="articles-list">
       <div class="container">
         <div class="articles-grid-full">
-          <article class="article-card-full" v-for="article in articles" :key="article.id">
+          <article class="article-card-full" v-for="article in articles" :key="article.filename">
             <div class="article-card-inner">
               <div class="article-info">
                 <span class="article-category">
