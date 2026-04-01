@@ -368,105 +368,65 @@ endlegend
 
 ```plantuml
 @startuml
-' =================== 全局样式 ===================
-skinparam dpi 160
+title 浅拷贝 vs 深拷贝（内存模型）
+
+' ===== 全局风格 =====
 skinparam shadowing false
-skinparam roundcorner 15
-skinparam sequenceArrowThickness 1.3
-skinparam sequenceMessageAlign center
-skinparam ParticipantPadding 15
-skinparam BoxPadding 15
-skinparam ArrowColor #666
-skinparam ArrowThickness 1.2
-skinparam SequenceLifeLineBorderColor #AAAAAA
-skinparam SequenceLifeLineBackgroundColor #F8F8F8
-skinparam NoteBackgroundColor #FFFFFB
-skinparam NoteBorderColor #AAA
-skinparam ParticipantFontSize 13
-skinparam ActorFontSize 14
-skinparam SequenceDividerFontSize 14
+skinparam linetype ortho
+skinparam defaultTextAlignment center
 
-title **深拷贝 vs 浅拷贝
-
-actor Developer as D #EAF5FF
-participant "原对象\nOriginal Object" as ORIG #FEFEFE
-participant "浅拷贝结果\nShallow Copy" as SHALLOW #FFFBEA
-participant "深拷贝结果\nDeep Copy" as DEEP #FDFCEB
-participant "堆内存\nHeap Memory" as H #EAF5FF
-
-== 原始状态 ==
-
-D -> ORIG : class Buffer { int* data; }
-note right of ORIG
-  原始对象状态：
-  data 指向堆内存 0x1000
-end note
-
-ORIG -> H : data = new int[10]
-note right of H
-  堆内存 0x1000:
-  [1, 2, 3, 4, 5, ...]
-end note
-
-== 浅拷贝 ==
-
-D -> SHALLOW : 拷贝构造 (默认)
-note right of SHALLOW #FFCCCC
-  浅拷贝：只复制指针值
-  - data 指针复制为 0x1000
-  - 与原对象指向同一内存！
-end note
-
-ORIG -> SHALLOW : data 指针值复制
-note right of SHALLOW
-  0x1000 → 0x1000
-  两个指针指向相同地址
-end note
-
-note right of SHALLOW #FF9999
-  问题：
-  - 修改一处影响另一处
-  - 销毁时重复释放！
-  - 内存错误 / 程序崩溃
-end note
-
-== 深拷贝 ==
-
-D -> DEEP : 拷贝构造 (显式定义)
-note right of DEEP #E8F5E9
-  深拷贝：分配新内存
-  - new 新内存 0x2000
-  - 复制所有数据内容
-end note
-
-DEEP -> DEEP : new int[10] → 0x2000
-DEEP -> H : 复制数据内容
-note right of DEEP
-  0x2000: [1, 2, 3, 4, 5, ...]
-  完全独立的内存副本
-end note
-
-== 对比总结 ==
-
-legend center
-**深拷贝 vs 浅拷贝**
-| 特性 | 浅拷贝 | 深拷贝 |
-|------|-------|--------|
-| 指针成员 | 只复制地址 | 分配新内存复制内容 |
-| 内存关系 | 共享堆内存 | 各自独立 |
-| 修改影响 | 相互影响 | 互不影响 |
-| 析构安全 | 重复释放风险 | 安全 |
-| 实现方式 | 编译器默认生成 | 需显式定义 |
-
-**深拷贝实现示例：**
-Buffer(const Buffer& other) : data(new int[10]) {
-    memcpy(data, other.data, 10 * sizeof(int));
+skinparam rectangle {
+    RoundCorner 20
+    BorderColor #444
 }
 
-**现代 C++ 建议：**
-使用 std::vector<int> data;
-自动实现深拷贝语义
-endlegend
+skinparam note {
+    BackgroundColor #F9F9F9
+    BorderColor #AAAAAA
+}
+
+' ===== 栈区 =====
+rectangle "🧱 栈区（对象）" #EAF2FF {
+
+    rectangle "对象 A\n──────────\ndata_ptr" as A #FFFFFF
+
+    rectangle "对象 B\n（浅拷贝）\n──────────\ndata_ptr" as B1 #FFF4E6
+
+    rectangle "对象 B\n（深拷贝）\n──────────\ndata_ptr" as B2 #E8FFF0
+}
+
+' ===== 堆区 =====
+rectangle "🧠 堆区（数据）" #FFFBEA {
+
+    rectangle "内存块 #1\n──────────\n值 = 10" as H1 #FFFFFF
+    rectangle "内存块 #2\n──────────\n值 = 10" as H2 #FFFFFF
+}
+
+' ===== 布局控制（关键）=====
+A -[hidden]-> B1
+B1 -[hidden]-> B2
+H1 -[hidden]-> H2
+
+' ===== 指针关系 =====
+A --> H1 : 指向
+B1 --> H1 : 共享地址
+
+B2 --> H2 : 独立副本
+
+' ===== 说明 =====
+note bottom of B1
+【浅拷贝】
+• 仅复制指针地址
+• 多个对象共享同一块内存
+⚠ 可能导致 double free / 数据污染
+end note
+
+note bottom of B2
+【深拷贝】
+• 分配新的内存空间
+• 复制数据内容
+✔ 对象之间完全独立
+end note
 @enduml
 ```
 
