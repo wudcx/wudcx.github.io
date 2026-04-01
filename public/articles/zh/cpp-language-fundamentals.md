@@ -31,63 +31,37 @@ C++ 四种类型转换操作符，各有不同的使用场景和安全性：
 
 ```plantuml
 @startuml
-' =================== 全局样式 ===================
-skinparam dpi 160
+title C/C++ 强制类型转换（对象 + 指针变化 + 原理）
+
+left to right direction
+skinparam rectangle {
+    RoundCorner 20
+    Padding 12
+}
 skinparam shadowing false
-skinparam roundcorner 12
-skinparam classAttributeIconSize 0
-skinparam ParticipantPadding 10
-skinparam BoxPadding 10
 
-title **C++ Type Casting Hierarchy
+' ===== 对象区 =====
+rectangle "对象（Derived）\n\n起始地址: 0x1000\n[vptr]\n[Base 子对象 @0x1000]\n[Derived 子对象 @0x1010]" as OBJ #E3F2FD
 
-package "C++ Type Casts" <<Frame>> {
-    class "static_cast<T>" as SC #E8F5E9 {
-        + Compile-time type checking
-        + Basic type conversions
-        + Upcast/Downcast in inheritance
-    }
+rectangle "Base* p\n\n静态类型: Base*\n指向: 0x1000" as BASEPTR #BBDEFB
 
-    class "dynamic_cast<T>" as DC #E3F2FD {
-        + Runtime type checking via RTTI
-        + Safe downcasting
-        + Returns nullptr on failure
-    }
+OBJ -down-> BASEPTR
 
-    class "const_cast<T>" as CC #FFF3E0 {
-        + Add/Remove const qualifier
-        + Only cast that can modify const
-    }
+' ===== 转换区 =====
 
-    class "reinterpret_cast<T>" as RC #FCE4EC {
-        + Bit-level reinterpretation
-        + Pointer/Integer conversion
-        + Highly dangerous
-    }
-}
+rectangle "static_cast\n\n编译期\n✔ 计算偏移（+0x10）\n✖ 不校验类型\n\n结果：0x1010\n⚠️ 错误类型 → UB" as SC #E8F5E9
 
-package "Use Scenarios" <<Frame>> {
-    class "Numeric Types" as NT #F5F5F5
-    class "Inheritance Hierarchy" as IH #F5F5F5
-    class "const Correctness" as CC2 #F5F5F5
-    class "Low-level Operations" as LO #F5F5F5
-}
+rectangle "dynamic_cast\n\n运行时\n✔ RTTI 检查\n✔ 安全偏移（+0x10）\n\n结果：0x1010 或 nullptr" as DC #FFF3E0
 
-SC --> NT : int → double\nvoid* → T*
-SC --> IH : Base* → Derived*\n(upcast safe)
-DC --> IH : Base* → Derived*\n(runtime checked)
-CC --> CC2 : remove_const\nadd_const
-RC --> LO : pointer ↔ int\nbit reinterpretation
+rectangle "const_cast\n\n编译期\n✔ 去 const\n✔ 地址不变\n\n结果：0x1000" as CC #F3E5F5
 
-legend center
-**C++ 四种类型转换操作符**
-| 转换类型 | 检查时机 | 安全性 | 典型用途 |
-|---------|---------|-------|---------|
-| static_cast | 编译时 | 中 | 基本类型、上下转换 |
-| dynamic_cast | 运行时 | 高 | 安全向下转型 |
-| const_cast | 编译时 | 低 | const移除/添加 |
-| reinterpret_cast | 无 | 极高风险 | 底层位操作 |
-endlegend
+rectangle "reinterpret_cast\n\n编译期\n✖ 无检查\n✖ 不做偏移\n\n结果：0x1000（直接当成Derived用）" as RC #FFEBEE
+
+' ===== 连接 =====
+BASEPTR --> SC
+BASEPTR --> DC
+BASEPTR --> CC
+BASEPTR --> RC
 @enduml
 ```
 
