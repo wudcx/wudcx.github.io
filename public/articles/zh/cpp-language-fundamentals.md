@@ -31,37 +31,45 @@ C++ 四种类型转换操作符，各有不同的使用场景和安全性：
 
 ```plantuml
 @startuml
-title C/C++ 强制类型转换（对象 + 指针变化 + 原理）
+title C/C++ 强制类型转换（内存模型 + 指针变化 + 安全性）
 
 left to right direction
 skinparam rectangle {
-    RoundCorner 20
-    Padding 12
+    RoundCorner 15
+    Padding 10
 }
 skinparam shadowing false
 
-' ===== 对象区 =====
-rectangle "对象（Derived）\n\n起始地址: 0x1000\n[vptr]\n[Base 子对象 @0x1000]\n[Derived 子对象 @0x1010]" as OBJ #E3F2FD
+' ================== 内存布局 ==================
+rectangle "Derived 对象内存布局\n\n起始地址: 0x1000\n----------------------\n[vptr]\n----------------------\nBase 子对象 (0x1000)\n----------------------\nDerived 子对象 (0x1010)" as OBJ #E3F2FD
 
-rectangle "Base* p\n\n静态类型: Base*\n指向: 0x1000" as BASEPTR #BBDEFB
+rectangle "Base* p\n\n静态类型: Base*\n指向地址: 0x1000" as BASEPTR #BBDEFB
 
-OBJ -down-> BASEPTR
+OBJ -down-> BASEPTR : 指向 Base 子对象
 
-' ===== 转换区 =====
+' ================== 转换 ==================
+rectangle "static_cast\n\n【编译期】\n输入: Base*\n\n✔ 计算偏移 (+0x10)\n✖ 无运行时校验\n\n输出: Derived* (0x1010)\n⚠️ 非真实 Derived → UB" as SC #E8F5E9
 
-rectangle "static_cast\n\n编译期\n✔ 计算偏移（+0x10）\n✖ 不校验类型\n\n结果：0x1010\n⚠️ 错误类型 → UB" as SC #E8F5E9
+rectangle "dynamic_cast\n\n【运行时】\n输入: Base*\n\n✔ RTTI 类型检查\n✔ 安全偏移\n\n输出: Derived* (0x1010)\n或 nullptr（失败）\n✔ 安全" as DC #FFF3E0
 
-rectangle "dynamic_cast\n\n运行时\n✔ RTTI 检查\n✔ 安全偏移（+0x10）\n\n结果：0x1010 或 nullptr" as DC #FFF3E0
+rectangle "const_cast\n\n【编译期】\n输入: const Base*\n\n✔ 去除 const/volatile\n✔ 地址不变\n\n输出: Base* (0x1000)\n⚠️ 修改只读对象 → UB" as CC #F3E5F5
 
-rectangle "const_cast\n\n编译期\n✔ 去 const\n✔ 地址不变\n\n结果：0x1000" as CC #F3E5F5
+rectangle "reinterpret_cast\n\n【编译期】\n输入: Base*\n\n✖ 无类型检查\n✖ 不做偏移\n\n输出: 任意类型指针 (0x1000)\n❌ 不改变地址\n❌ 不保证对象语义\n仅按目标类型解释内存\n⚠️ 仅当内存布局兼容时才可能正确" as RC #FFEBEE
 
-rectangle "reinterpret_cast\n\n编译期\n✖ 无检查\n✖ 不做偏移\n\n结果：0x1000（直接当成Derived用）" as RC #FFEBEE
+' ================== 连接 ==================
+BASEPTR --> SC : Base* → Derived*
+BASEPTR --> DC : Base* → Derived*
+BASEPTR --> CC : const Base* → Base*
+BASEPTR --> RC : Base* → 任意类型*
 
-' ===== 连接 =====
-BASEPTR --> SC
-BASEPTR --> DC
-BASEPTR --> CC
-BASEPTR --> RC
+' ================== 安全等级 ==================
+rectangle "安全性排序\n\n1️⃣ dynamic_cast  （运行时校验）\n2️⃣ static_cast   （仅偏移）\n3️⃣ const_cast    （仅去修饰）\n4️⃣ reinterpret_cast（仅重解释）" as SAFE #FFFDE7
+
+SC -down-> SAFE
+DC -down-> SAFE
+CC -down-> SAFE
+RC -down-> SAFE
+
 @enduml
 ```
 
@@ -94,109 +102,97 @@ BASEPTR --> RC
 
 ```plantuml
 @startuml
-' =================== 全局样式 ===================
-skinparam dpi 160
+title C++ 默认构造函数生成规则（纵向精修版）
+
+top to bottom direction
+skinparam rectangle {
+    RoundCorner 15
+    Padding 10
+}
 skinparam shadowing false
-skinparam roundcorner 15
-skinparam sequenceArrowThickness 1.3
-skinparam sequenceMessageAlign center
-skinparam ParticipantPadding 15
-skinparam BoxPadding 15
-skinparam ArrowColor #666
-skinparam ArrowThickness 1.2
-skinparam SequenceLifeLineBorderColor #AAAAAA
-skinparam SequenceLifeLineBackgroundColor #F8F8F8
-skinparam NoteBackgroundColor #FFFFFB
-skinparam NoteBorderColor #AAA
-skinparam ParticipantFontSize 13
-skinparam ActorFontSize 14
-skinparam SequenceDividerFontSize 14
 
-title **默认构造函数生成规则
+' ===== 起点 =====
+rectangle "① 定义类 A" as START #E3F2FD
 
-actor Compiler as C #EAF5FF
-participant "class Empty {}" as E #FEFEFE
-participant "class WithMembers" as WM #FFFBEA
-participant "生成的默认构造函数" as DC #FDFCEB
+rectangle "② 是否声明过构造函数？" as USER #E8F5E9
 
-== 规则一：无用户声明构造函数时生成 ==
+START --> USER
 
-C -> E : class Empty {}
-note right of C #E8F5E9
-  编译器生成默认构造函数
-  Empty() = default;
+note right of USER
+结论：
+声明“任意构造函数”
+→ 不再自动生成默认构造
 end note
 
-E -> DC : 生成: Empty() {}
+' ===== 分支 =====
+rectangle "③ 未声明\n→ 自动生成（implicit）" as GEN #E8F5E9
 
-== 规则二：显式 = default / = delete ==
+rectangle "③ 已声明\n→ 默认构造不会生成" as NO_GEN #FFEEEE
 
-C -> WM : class Demo { Demo() = default; }
-note right of C
-  显式要求生成默认构造
+USER --> GEN : 否
+USER --> NO_GEN : 是
+
+' ===== explicit =====
+rectangle "④ 是否显式声明\nA() = default ?" as EXPLICIT #FFFDE7
+
+NO_GEN --> EXPLICIT : 可选
+
+note right of EXPLICIT
+关键点：
+=default 是“请求生成”
+≠ 一定可用
 end note
 
-C -> WM : class Forbidden { Forbidden() = delete; }
-note right of C
-  禁止生成默认构造
+' ===== 合流 =====
+rectangle "⑤ 是否拥有默认构造？" as MERGE #E1F5FE
+
+GEN --> MERGE : implicit
+EXPLICIT --> MERGE : explicit
+
+note right of MERGE
+来源不同：
+implicit / explicit
+👉 语义完全一致
 end note
 
-== 规则三：特殊情况阻止生成 ==
+' ===== 条件 =====
+rectangle "⑥ 是否满足构造条件？" as CHECK #FFF3E0
 
-C -> WM : class HasRef { int& ref; }
-note right of WM #FFCCCC
-  引用成员阻止默认构造生成
-  必须在构造函数的初始化列表中初始化
+MERGE --> CHECK
+
+note right of CHECK
+必须满足：
+✔ 成员可默认构造
+✔ 基类可默认构造
+✔ const 成员已初始化
+✔ 引用成员已绑定
 end note
 
-C -> WM : class HasConst { const int x; }
-note right of WM #FFCCCC
-  const 成员阻止默认构造生成
-  必须使用初始化列表
+' ===== 结果 =====
+rectangle "⑦ 可用\n→ 可以调用 A()" as OK #E8F5E9
+
+rectangle "⑦ 不可用\n→ A() = delete" as DEL #FFCCCC
+
+CHECK --> OK : 满足
+CHECK --> DEL : 不满足
+
+note right of DEL
+本质：
+函数“被生成但被删除”
+≠ 不存在
 end note
 
-C -> WM : class HasComplex { std::string s; }
-note right of WM #E8F5E9
-  std::string 有默认构造，
-  编译器会生成默认构造调用它
+' ===== 总结 =====
+note bottom
+面试核心逻辑（三层）：
+
+1️⃣ 是否生成（看有没有声明构造函数）
+2️⃣ 是否存在（implicit / =default）
+3️⃣ 是否可用（是否满足约束）
+
+👉 生成 ≠ 存在 ≠ 可用（核心考点）
 end note
 
-== 规则四：基类约束 ==
-
-C -> WM : class Derived : Base { Base(int); }
-note right of WM #FFCCCC
-  基类无默认构造，
-  派生类不自动生成默认构造
-  除非显式声明: Derived() : Base(0) {}
-end note
-
-== 规则五：虚函数与虚继承 ==
-
-C -> WM : class Virtual { virtual void f(); }
-note right of WM #E8F5E9
-  生成默认构造（隐式）
-  负责初始化 vptr（虚表指针）
-end note
-
-C -> WM : class VirtualBase : virtual Base {};
-note right of WM #FFF3E0
-  虚继承时：
-  编译器生成默认构造
-  负责初始化虚基类指针
-end note
-
-legend center
-**默认构造函数生成条件**
-| 情况 | 是否生成 | 说明 |
-|-----|---------|------|
-| 无任何构造函数 | 生成 | 空默认构造 |
-| 只有带参构造 | 不生成 | 必须显式定义 |
-| = default | 生成 | 显式请求 |
-| = delete | 不生成 | 禁止生成 |
-| 有引用成员 | 不生成 | 需初始化列表 |
-| 有 const 成员 | 不生成 | 需初始化列表 |
-| 基类无默认构造 | 不生成 | 需显式调用基类构造 |
-endlegend
 @enduml
 ```
 
@@ -227,93 +223,138 @@ endlegend
 
 ```plantuml
 @startuml
-' =================== 全局样式 ===================
-skinparam dpi 160
+title C++ 默认拷贝构造函数生成规则（高信息密度优化版）
+
+top to bottom direction
+skinparam rectangle {
+    RoundCorner 12
+    Padding 8
+}
 skinparam shadowing false
-skinparam roundcorner 15
-skinparam sequenceArrowThickness 1.3
-skinparam sequenceMessageAlign center
-skinparam ParticipantPadding 15
-skinparam BoxPadding 15
-skinparam ArrowColor #666
-skinparam ArrowThickness 1.2
-skinparam SequenceLifeLineBorderColor #AAAAAA
-skinparam SequenceLifeLineBackgroundColor #F8F8F8
-skinparam NoteBackgroundColor #FFFFFB
-skinparam NoteBorderColor #AAA
-skinparam ParticipantFontSize 13
-skinparam ActorFontSize 14
-skinparam SequenceDividerFontSize 14
 
-title **默认拷贝构造函数生成规则
+' ===== 主流程 =====
+rectangle "类 A 定义" as START #E3F2FD
+rectangle "① 是否声明拷贝构造？" as Q1 #E8F5E9
+rectangle "② 是否拥有拷贝构造？" as Q2 #E1F5FE
+rectangle "③ 是否可用？" as Q3 #FFF3E0
+rectangle "可用（可拷贝）" as OK #C8E6C9
+rectangle "delete（不可用）" as DEL #EF9A9A
 
-actor Compiler as C #EAF5FF
-participant "class Person { string name; }" as P #FEFEFE
-participant "生成的拷贝构造" as CC #FDFCEB
-participant "逐成员拷贝" as MW #FFFBEA
+START --> Q1
 
-== 默认生成条件 ==
+' ===== 分支 =====
+rectangle "implicit 生成\nA(const A&)" as GEN #C8E6C9
+rectangle "不生成（被抑制）" as NO_GEN #FFCDD2
+rectangle "=default 显式恢复" as EXPLICIT #FFF9C4
 
-C -> P : class Person { string name; }
-note right of C #E8F5E9
-  无显式拷贝构造函数声明
-  编译器生成默认拷贝构造
-  Person(const Person& other);
+Q1 --> GEN : 否（未声明）
+Q1 --> NO_GEN : 是（已声明）
+
+NO_GEN --> EXPLICIT : 可选
+
+GEN --> Q2 : implicit
+EXPLICIT --> Q2 : explicit
+
+Q2 --> Q3
+Q3 --> OK : 是
+Q3 --> DEL : 否
+
+' ===== 结构化注释（左）=====
+note left of Q1
+【声明判定（关键入口）】
+
+以下任一出现都算“已声明”：
+✔ 自定义拷贝构造
+✔ A(const A&) = delete
+✔ A(const A&) = default
+
+👉 结果：
+不再触发 implicit 生成
 end note
 
-P -> CC : 生成: Person(const Person&)
+note left of GEN
+【implicit 拷贝构造】
 
-== 逐成员拷贝过程 ==
+编译器自动生成：
+A(const A&)
 
-CC -> MW : 调用成员拷贝构造函数
-note right of MW
-  **逐成员拷贝 (Memberwise Copy):**
-  - 内置类型(int, float*): 直接复制字节
-  - 类类型(string): 调用string的拷贝构造
-  - 数组: 递归逐成员拷贝
+特点：
+✔ public
+✔ inline
+✔ 成员逐个拷贝（浅拷贝）
+
+⚠ 不保证一定“可用”
 end note
 
-MW -> MW : name.other.name 复制
-note right of MW
-  调用 std::string 的拷贝构造
+' ===== 结构化注释（右）=====
+note right of EXPLICIT
+【=default】
+
+语义：
+请求编译器生成拷贝构造
+
+作用：
+✔ 恢复被抑制的构造函数
+✔ 行为 ≈ implicit
+
+常见用途：
+✔ 配合移动语义控制
 end note
 
-== 特殊成员处理 ==
+note right of Q2
+【是否拥有（Existence）】
 
-C -> P : class HasRef { int& ref; }
-note right of P #FFCCCC
-  引用成员阻止生成！
-  引用不能重新绑定
+来源仅两种：
+✔ implicit（自动生成）
+✔ explicit（=default）
+
+👉 本质：
+函数是否“被定义出来”
 end note
 
-C -> P : class HasConst { const int x; }
-note right of P #FFF3E0
-  const 成员可拷贝
-  但不能修改
-  参数应为 const Person&
+note right of Q3
+【可用性（Viability）】
+
+即使“存在”，也可能：
+
+👉 被隐式 delete
+
+触发条件：
+❌ 成员不可拷贝（unique_ptr）
+❌ 基类不可拷贝
+❌ 成员引用无法绑定
+❌ 成员被 delete
+
+👉 编译期检查
 end note
 
-C -> P : class HasVFunc { virtual void f(); }
-note right of P #E8F5E9
-  虚函数类可生成拷贝构造
-  vptr 被复制，指向相同虚表
+note right of DEL
+【delete 语义】
+
+函数存在但：
+
+✔ 不可调用
+✔ 编译直接报错
+
+👉 常见面试点
+“为什么编译器生成了却不能用？”
 end note
 
-== 不生成的场景 ==
+' ===== 总结 =====
+note bottom
+三阶段模型（核心）：
 
-legend center
-**默认拷贝构造函数不生成的场景**
-| 情况 | 原因 |
-|-----|------|
-| 显式声明了拷贝构造 | 用户已定义 |
-| 声明了移动构造 | C++11+ 规则 |
-| 声明了移动赋值 | C++11+ 规则 |
-| 包含引用成员 | 引用不可重新绑定 |
-| = delete 声明 | 显式禁止拷贝 |
+① Generation（是否生成）
+② Existence（是否存在）
+③ Viability（是否可用）
 
-**拷贝构造参数签名必须是：**
-ClassName(const ClassName&) 或 ClassName(ClassName&)
-endlegend
+关键理解：
+
+✔ implicit ≠ 一定存在
+✔ 存在 ≠ 可用
+
+👉 编译器是“逐层筛选”的
+end note
 @enduml
 ```
 
@@ -435,86 +476,46 @@ extern 的典型用法汇总：
 
 ```plantuml
 @startuml
-' =================== 全局样式 ===================
-skinparam dpi 160
+title extern 关键字作用全景（优化精炼版）
+
+left to right direction
+skinparam rectangle {
+    RoundCorner 12
+    Padding 10
+}
 skinparam shadowing false
-skinparam roundcorner 15
-skinparam sequenceArrowThickness 1.3
-skinparam sequenceMessageAlign center
-skinparam ParticipantPadding 15
-skinparam BoxPadding 15
-skinparam ArrowColor #666
-skinparam ArrowThickness 1.2
-skinparam SequenceLifeLineBorderColor #AAAAAA
-skinparam SequenceLifeLineBackgroundColor #F8F8F8
-skinparam NoteBackgroundColor #FFFFFB
-skinparam NoteBorderColor #AAA
-skinparam ParticipantFontSize 13
-skinparam ActorFontSize 14
-skinparam SequenceDividerFontSize 14
 
-title **extern 关键字作用 / extern Keyword Mechanism
+rectangle "extern（核心语义）\n\n👉 声明符号具有“外部链接”（external linkage）\n👉 默认不分配存储（除非初始化）" as CORE #E3F2FD
 
-package "多文件共享
-  file "file1.cpp" as F1 #FEFEFE
-  file "file2.cpp" as F2 #FEFEFE
+rectangle "① 跨文件引用（变量）\n\nextern int a;\n\n✔ 引用外部定义\n✔ 不分配内存" as V1 #C8E6C9
 
-  F1 -> F2 : extern int global_var;
-  note right of F1
-    extern 声明：
-    "global_var 定义在别处"
-    不分配空间，只声明存在
-  end note
+rectangle "② 函数声明\n\nvoid foo();\n(默认 extern)\n\n✔ 可跨文件调用\n✔ extern 可省略" as V2 #E1F5FE
 
-  F1 -> F2 : extern void func();
-  note right of F1
-    声明函数存在于其他文件
-  end note
-}
+rectangle "③ C/C++ 互操作\n\nextern \"C\"\n\n✔ 禁止 name mangling\n✔ 保持 C 链接方式" as V3 #FFF3E0
 
-package "extern const 链接性 / extern const Linkage" <<Frame>> {
-  file "module.cpp" as M #E8F5E9
-  file "main.cpp" as MAIN #E3F2FD
+rectangle "④ 特殊情况：带初始化\n\nextern int a = 10;\n\n⚠ 实际是定义\n✔ 分配存储" as V4 #FFCDD2
 
-  M -> MAIN : extern const int BUFFER_SIZE;
-  note right of M
-    const 默认内部链接性
-    extern 恢复外部链接性
-    使其可被其他文件访问
-  end note
-}
+rectangle "⑤ 链接属性对比\n\nextern → 外部链接（跨文件）\nstatic → 内部链接（仅本文件）" as V5 #F3E5F5
 
-package "C/C++ 混合编程
-  class "C++ 代码" as CPP #FEFEFE
-  class "C 函数库" as CLIB #FFFBEA
+CORE --> V1
+CORE --> V2
+CORE --> V3
+CORE --> V4
+CORE --> V5
 
-  CPP -> CLIB : extern "C" void c_func();
-  note bottom of CPP
-    extern "C" 告诉编译器：
-    - 按 C 风格命名（无名字修饰）
-    - 不进行函数重载处理
-    - 产生纯 C 符号
-  end note
+note right
+统一理解（关键）：
 
-  note bottom of CLIB
-    常见场景：
-    - 调用 C 标准库
-    - 调用第三方 C 库
-    - 被 C 代码调用
-  end note
-}
+extern 的本质 = 控制“符号在链接阶段的可见性”
 
-legend center
-**extern 核心用法**
-| 用法 | 作用 |
-|-----|------|
-| extern int x; | 声明外部全局变量 |
-| extern void f(); | 声明外部函数 |
-| extern const int y; | 恢复 const 外部链接性 |
-| extern "C" f(); | C 风格链接声明 |
+👉 所有用法都是这个核心语义的不同体现：
 
-**注意：** extern 仅是声明，不定义，不分配空间
-endlegend
+- 跨文件访问（变量/函数）
+- C/C++ 兼容（extern "C"）
+- 链接范围控制（vs static）
+
+⚠ 编译通过 ≠ 链接成功（可能 undefined reference）
+end note
 @enduml
 ```
 
@@ -808,86 +809,69 @@ endlegend
 
 ```plantuml
 @startuml
-' =================== 全局样式 ===================
-skinparam dpi 160
+title 野指针产生 vs 避免（统一内存模型）
+
+' ===== 全局风格 =====
 skinparam shadowing false
-skinparam roundcorner 15
-skinparam sequenceArrowThickness 1.3
-skinparam sequenceMessageAlign center
-skinparam ParticipantPadding 15
-skinparam BoxPadding 15
-skinparam ArrowColor #666
-skinparam ArrowThickness 1.2
-skinparam SequenceLifeLineBorderColor #AAAAAA
-skinparam SequenceLifeLineBackgroundColor #F8F8F8
-skinparam NoteBackgroundColor #FFFFFB
-skinparam NoteBorderColor #AAA
-skinparam ParticipantFontSize 13
-skinparam ActorFontSize 14
-skinparam SequenceDividerFontSize 14
+skinparam linetype ortho
+skinparam defaultTextAlignment center
 
-title **野指针生命周期与避免
+skinparam rectangle {
+    RoundCorner 20
+    BorderColor #444
+}
 
-actor Developer as D #EAF5FF
-participant "原始指针\n*p = new Obj" as P #FEFEFE
-participant "堆内存\n[new Obj]" as H #FFFBEA
-participant "智能指针\nunique_ptr" as S #FDFCEB
-participant "nullptr" as N #EAF5FF
+skinparam note {
+    BackgroundColor #F9F9F9
+    BorderColor #AAAAAA
+}
 
-== 危险模式：原始指针 ==
+left to right direction
 
-D -> P : p = new Obj
-activate P
-P -> H : 分配堆内存
-H --> P : 返回地址
-deactivate P
+' ===== 栈区 =====
+rectangle "🧱 栈区（指针变量）" #EAF2FF {
 
-D -> P : delete p
-activate P
-P -> H : 释放内存
-note right of P #FFCCCC
-  危险：p 现在指向
-  已释放的内存（野指针！）
+    rectangle "p（未置空）\n──────────\nint*" as P_bad #FFECEC
+    rectangle "p（已置空）\n──────────\nint*" as P_good #E8FFF0
+}
+
+' ===== 堆区 =====
+rectangle "🧠 堆区（内存）" #FFFBEA {
+
+    rectangle "内存块\n──────────\nvalue = 10" as H_valid #FFFFFF
+    rectangle "已释放内存\n──────────\n❌ 无效" as H_free #FFF0F0
+}
+
+' ===== 布局控制 =====
+P_bad -[hidden]-> P_good
+H_valid -[hidden]-> H_free
+
+' ===== 分配 =====
+P_bad --> H_valid : new
+P_good --> H_valid : new
+
+' ===== 释放（垂直更清晰）=====
+H_valid --> H_free : delete
+
+' ===== 分叉（避免重叠）=====
+P_bad -down-> H_free : ❌ 仍然指向（野指针）
+P_good -right-> P_good : ✔ p = nullptr
+
+' ===== 说明 =====
+note left of P_bad
+【野指针产生】
+• 内存已释放（delete）
+• 指针仍保存原地址
+→ 指向无效内存
+⚠ 未定义行为
 end note
-P -> P : p 仍持有地址\n但内存已无效！
-deactivate P
 
-D -> P : *p (解引用)
-note right of D #FF9999
-  未定义行为！
-  程序崩溃或数据损坏
+note right of P_good
+【避免方式】
+• delete 后置 nullptr
+• 初始化为 nullptr
+• 不返回局部变量地址
+• 使用智能指针（unique_ptr / shared_ptr）
 end note
-
-== 安全模式：智能指针 ==
-
-D -> S : auto p = make_unique<Obj>()
-activate S
-S -> S : 创建 unique_ptr\n包装原始指针
-note right of S
-  unique_ptr 拥有对象。
-  无需手动 delete。
-end note
-deactivate S
-
-D -> S : (退出作用域)
-activate S
-S -> S : unique_ptr 析构函数\n自动调用
-S -> H : delete p (自动)
-note right of S
-  安全：内存被释放，
-  p 自动失效
-end note
-deactivate S
-
-== 避免野指针最佳实践 ==
-
-legend center
-**如何避免野指针**
-1. 声明时将所有指针初始化为 **nullptr**。
-2. 使用 **智能指针**（unique_ptr / shared_ptr）。
-3. **delete** 后立即设置：p = nullptr。
-4. 切勿返回指向 **局部栈变量** 的指针。
-5. 开发时使用 **AddressSanitizer** 检测。
-endlegend
 @enduml
 ```
