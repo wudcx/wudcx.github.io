@@ -826,7 +826,7 @@ skinparam note {
     BorderColor #AAAAAA
 }
 
-left to right direction
+top to bottom direction
 
 ' ===== 栈区 =====
 rectangle "🧱 栈区（指针变量）" #EAF2FF {
