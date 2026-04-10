@@ -542,138 +542,522 @@ endlegend
 
 通过图示理解单例模式的多种实现与内存模型：
 
+- **饿汉式（Eager Loading）**
+
+类加载时直接创建实例，利用类加载机制保证线程安全。
+
 ```plantuml
 @startuml
-title 单例模式(Singleton) — 实现方式与线程安全问题
+title 单例模式（Singleton - 饿汉式）
 
-top to bottom direction
-skinparam rectangle {
-    RoundCorner 15
-    Padding 10
-}
 skinparam shadowing false
+skinparam classAttributeIconSize 0
 
-' ===== 单例核心 =====
-rectangle "Singleton\n\n📌 私有构造函数\n📌 静态实例指针\n📌 全局访问点getInstance()" as SINGLETON #E3F2FD
-
-' ===== 饿汉式 =====
-rectangle "🥣 饿汉式\n\n类加载时直接创建实例\n\nstatic Singleton instance;\n\n✅ 线程安全（类加载锁）\n❌ 可能浪费资源" as EAGER #C8E6C9
-
-' ===== 懒汉式 =====
-rectangle "🦥 懒汉式（线程不安全）\n\nif (instance == nullptr)\n    instance = new Singleton();\n\n❌ 多线程会创建多个实例！\n❌ double check失败" as LAZY #FFCDD2
-
-' ===== 双重检查锁定 =====
-rectangle "🔒 双重检查锁定(DCL)\n\nif (instance == nullptr) {      // 第一次检查\n    lock();\n    if (instance == nullptr) {  // 第二次检查\n        instance = new Singleton();\n    }\n}\n\n✅ 线程安全\n⚠️ 需要volatile防止重排" as DCL #FFF3E0
-
-' ===== Meyers单例 =====
-rectangle "✨ Meyers单例（推荐）\n\nstatic Singleton& getInstance() {\n    static Singleton instance;\n    return instance;\n}\n\n✅ C++11线程安全\n✅ 自动释放\n✅ 最简洁" as MEYERS #E8F5E9
-
-' ===== 内存模型 =====
-package "🧠 内存模型对比" #F5F5F5 {
-    rectangle "饿汉式内存布局\n\n.data区（已初始化）\n--------------------\ninstance对象\n(程序启动时创建)" as EAGER_MEM #E3F2FD
-
-    rectangle "懒汉式/DCL内存布局\n\n.heap区（延迟分配）\n--------------------\ninstance指针\n(首次调用时创建)" as LAZY_MEM #FFF3E0
-
-    rectangle "Meyers单例内存布局\n\n.bss区（静态局部）\n--------------------\ninstance对象\n(C++11线程安全初始化)" as MEYERS_MEM #E8F5E9
+skinparam class {
+    BackgroundColor #E3F2FD
+    BorderColor #1E88E5
 }
 
-' ===== 连接关系 =====
-SINGLETON --> EAGER : 方式1
-SINGLETON --> LAZY : 方式2
-SINGLETON --> DCL : 方式3
-SINGLETON --> MEYERS : 方式4
+skinparam note {
+    BackgroundColor #F5F5F5
+    BorderColor #BDBDBD
+}
 
-EAGER -down-> EAGER_MEM
-LAZY -down-> LAZY_MEM
-DCL -down-> LAZY_MEM
-MEYERS -down-> MEYERS_MEM
+class Singleton {
+    - Singleton()
+    - Singleton(const Singleton&) = delete
+    - Singleton& operator=(const Singleton&) = delete
+    --
+    - instance : Singleton <<static>>
+    --
+    + getInstance() : Singleton& <<static>>
+}
 
-' ===== 线程安全问题说明 =====
-note right of LAZY
-  **懒汉式线程安全问题**
+note right of Singleton
+<<Eager Singleton (C++17)>>
 
-  线程A: if(instance==nullptr) → true
-  线程B: if(instance==nullptr) → true
-  线程A: instance = new Singleton()
-  线程B: instance = new Singleton()
-  ❌ 创建了两个实例！
+#pragma once
+
+class Singleton {
+private:
+    Singleton() = default;
+    Singleton(const Singleton&) = delete;
+    Singleton& operator=(const Singleton&) = delete;
+
+    inline static Singleton instance{};
+
+public:
+    static Singleton& getInstance() {
+        return instance;
+    }
+};
+
+✔ 线程安全（类初始化阶段完成）
+✔ header-only 实现
+✔ 无锁高性能
+
+❌ 不支持延迟加载
 end note
-
-note right of DCL
-  **DCL为什么要两次检查**
-
-  第一次检查：无锁快速判断
-  → 大部分情况instance已创建
-
-  第二次检查：加锁后确认
-  → 确保只有一个线程创建
-
-  ⚠️ volatile防止指令重排
-  → instance = new的三个步骤：
-     1. 分配内存
-     2. 调用构造
-     3. 指针赋值
-end note
-
-note right of MEYERS
-  **Meyers单例为什么安全**
-
-  C++11保证：
-  静态局部变量初始化
-  线程安全（Magic Statics）
-
-  ```cpp
-  static T obj(args);
-  ```
-  编译器自动加锁
-
-  ✅ 最推荐的方式
-end note
-
-' ===== 应用场景 =====
-legend bottom
-  | 场景 | 推荐方式 |
-  |------|---------|
-  | 配置管理类 | Meyers |
-  | 日志系统 | Meyers |
-  | 数据库连接池 | DCL/Meyers |
-  | 线程池 | Meyers |
-  | 多线程环境 | 禁用懒汉式 |
-endlegend
 
 @enduml
 ```
 
----
+- **懒汉式（Lazy Loading）- 线程不安全**
 
-## 7. 工厂模式与抽象工厂
-
-工厂模式通过将对象创建与使用解耦，实现依赖倒置；抽象工厂创建一系列相关对象的产品族。
-
-**工厂模式核心概念**：
-
-| 模式 | 核心思想 | 产品等级 | 适用场景 |
-|-----|---------|---------|---------|
-| 简单工厂 | 一个工厂创建一种产品 | 单一 | 产品种类少 |
-| 工厂方法 | 子类决定创建哪个产品 | 单一 | 需要扩展 |
-| 抽象工厂 | 一个工厂创建一族产品 | 多个相关 | 产品族 |
-
-**工厂方法 vs 抽象工厂详细对比**：
-
-| 对比维度 | 工厂方法 | 抽象工厂 |
-|---------|---------|---------|
-| 产品等级 | 一个产品等级 | 多个相关产品等级 |
-| 产品关系 | 同一类产品 | 同一族产品（相关） |
-| 工厂结构 | 一个工厂创建一种产品 | 一个工厂创建一族产品 |
-| 扩展方式 | 扩展产品（竖向） | 扩展产品族（横向） |
-| 典型例子 | 数据库Driver工厂 | 跨平台UI组件工厂 |
-
-
-通过图示理解工厂模式与抽象工厂的内存模型和产品结构：
+延迟加载实例，但多线程环境下存在严重安全问题。
 
 ```plantuml
 @startuml
-title 工厂模式 vs 抽象工厂（内存模型 + 产品结构）
+title 单例模式（Singleton - 懒汉式）
+
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+skinparam class {
+    BackgroundColor #E8F5E9
+    BorderColor #43A047
+}
+
+skinparam note {
+    BackgroundColor #F5F5F5
+    BorderColor #BDBDBD
+}
+
+class Singleton {
+    - Singleton()
+    - Singleton(const Singleton&) = delete
+    - Singleton& operator=(const Singleton&) = delete
+    --
+    - instance : Singleton* <<static>>
+    --
+    + getInstance() : Singleton* <<static>>
+}
+
+note right of Singleton
+<<Lazy Singleton (Not Thread Safe)>>
+
+#pragma once
+
+class Singleton {
+private:
+    Singleton() = default;
+    Singleton(const Singleton&) = delete;
+    Singleton& operator=(const Singleton&) = delete;
+
+    inline static Singleton* instance = nullptr;
+
+public:
+    static Singleton* getInstance() {
+        if (instance == nullptr) {
+            instance = new Singleton();
+        }
+        return instance;
+    }
+};
+
+✔ 支持延迟加载（Lazy Initialization）
+✔ 只有在第一次调用时才创建实例
+
+❌ 非线程安全（多线程会创建多个实例）
+❌ 存在内存释放问题（需额外处理）
+end note
+
+@enduml
+```
+
+- **双重检查锁定（Double-Checked Locking）**
+
+在懒加载基础上加锁，但普通实现仍有指令重排问题，需配合volatile。
+
+```plantuml
+@startuml
+title 单例模式（Singleton - 双重检查锁 DCL）
+
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+skinparam class {
+    BackgroundColor #FFF3E0
+    BorderColor #FB8C00
+}
+
+skinparam note {
+    BackgroundColor #F5F5F5
+    BorderColor #BDBDBD
+}
+
+class Singleton {
+    - Singleton()
+    - Singleton(const Singleton&) = delete
+    - Singleton& operator=(const Singleton&) = delete
+    --
+    - instance : Singleton* <<static>>
+    - mtx : std::mutex <<static>>
+    --
+    + getInstance() : Singleton* <<static>>
+}
+
+note right of Singleton
+<<Double-Checked Locking (C++11)>>
+
+#pragma once
+#include <mutex>
+
+class Singleton {
+private:
+    Singleton() = default;
+    Singleton(const Singleton&) = delete;
+    Singleton& operator=(const Singleton&) = delete;
+
+    inline static Singleton* instance = nullptr;
+    inline static std::mutex mtx;
+
+public:
+    static Singleton* getInstance() {
+        if (instance == nullptr) {              // 第一次检查
+            std::lock_guard<std::mutex> lock(mtx);
+            if (instance == nullptr) {          // 第二次检查
+                instance = new Singleton();
+            }
+        }
+        return instance;
+    }
+};
+
+✔ 支持延迟加载
+✔ 线程安全（C++11 内存模型保证）
+
+✔ 减少锁开销（只在初始化时加锁）
+
+⚠ 实现复杂度高
+⚠ 仍存在生命周期管理问题（new 出来的对象）
+end note
+
+@enduml
+```
+
+- **Meyers单例**
+
+利用C++11静态局部变量线程安全特性，最简洁、最安全的实现方式。
+
+```plantuml
+@startuml
+title 单例模式（Singleton - Meyers）
+
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+skinparam class {
+    BackgroundColor #E1F5FE
+    BorderColor #039BE5
+}
+
+skinparam note {
+    BackgroundColor #F5F5F5
+    BorderColor #BDBDBD
+}
+
+class Singleton {
+    - Singleton()
+    - Singleton(const Singleton&) = delete
+    - Singleton& operator=(const Singleton&) = delete
+    --
+    + getInstance() : Singleton& <<static>>
+}
+
+note right of Singleton
+<<Meyers Singleton (C++11)>>
+
+#pragma once
+
+class Singleton {
+private:
+    Singleton() = default;
+    Singleton(const Singleton&) = delete;
+    Singleton& operator=(const Singleton&) = delete;
+
+public:
+    static Singleton& getInstance() {
+        static Singleton instance;  // 局部静态变量
+        return instance;
+    }
+};
+
+✔ 延迟加载（第一次调用时初始化）
+✔ 线程安全（C++11 保证局部 static 初始化一次）
+✔ 无锁实现（性能最佳）
+✔ 自动析构（无内存泄漏）
+
+✔ 实现最简单（推荐使用）
+end note
+
+@enduml
+```
+
+## 7. 工厂方法与抽象工厂
+
+工厂模式用于创建对象，核心是将对象的创建与使用分离。抽象工厂是工厂方法的扩展，处理产品族的创建。
+
+**工厂模式核心概念**：
+
+| 模式类型 | 核心思想 | 适用场景 | 复杂度 |
+|---------|---------|---------|-------|
+| 简单工厂 | 根据参数创建对象 | 对象种类少，稳定 | 低 |
+| 工厂方法 | 子类决定创建哪个对象 | 需要扩展，适合OCP | 中 |
+| 抽象工厂 | 创建产品族 | 多个产品线，需要产品一致性 | 高 |
+
+**工厂方法 vs 抽象工厂对比**：
+
+| 对比维度 | 工厂方法 | 抽象工厂 |
+|---------|---------|---------|
+| 产品维度 | 单个产品 | 多个相关产品（产品族） |
+| 实现方式 | 继承 | 对象组合 |
+| 扩展方式 | 新增产品子类 | 新增工厂子类 |
+| 典型应用 | 数据库连接 | UI主题、跨平台组件 |
+
+通过图示理解工厂方法与抽象工厂的结构与执行流程：
+
+- **工厂方法（Factory Method）**
+
+定义创建对象的接口，让子类决定实例化哪个类。核心是将对象的创建延迟到子类。
+
+```plantuml
+@startuml
+title 工厂方法（Factory Method）
+
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+skinparam class {
+    BackgroundColor #E3F2FD
+    BorderColor #1E88E5
+}
+
+skinparam note {
+    BackgroundColor #F5F5F5
+    BorderColor #BDBDBD
+}
+
+class Product {
+    + operation()
+}
+
+class ConcreteProduct {
+    + operation()
+}
+
+class Creator {
+    + factoryMethod() : Product <<abstract>>
+    + anOperation()
+}
+
+class ConcreteCreator {
+    + factoryMethod() : Product
+}
+
+note right of Creator
+<<Factory Method (C++17)>>
+
+#pragma once
+
+class Product {
+public:
+    virtual ~Product() = default;
+    virtual void operation() = 0;
+};
+
+class ConcreteProduct : public Product {
+public:
+    void operation() override {
+        // 具体产品操作
+    }
+};
+
+class Creator {
+public:
+    virtual ~Creator() = default;
+    
+    Product* create() {
+        auto* p = factoryMethod();
+        // 公共创建逻辑
+        return p;
+    }
+    
+protected:
+    virtual Product* factoryMethod() = 0;
+};
+
+class ConcreteCreator : public Creator {
+protected:
+    Product* factoryMethod() override {
+        return new ConcreteProduct();
+    }
+};
+
+✔ OCP：新增产品只需添加子类
+✔ 延迟加载：子类决定创建哪个对象
+✔ 解耦：创建代码与使用代码分离
+end note
+
+Product <|.. ConcreteProduct
+Creator <|-- ConcreteCreator
+ConcreteCreator .> ConcreteProduct : creates
+
+@enduml
+```
+
+- **抽象工厂（Abstract Factory）**
+
+提供一个创建一系列相关或互相依赖对象的接口，而无需指定它们具体的类。
+
+```plantuml
+@startuml
+title 抽象工厂（Abstract Factory）
+
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+skinparam class {
+    BackgroundColor #E8F5E9
+    BorderColor #43A047
+}
+
+skinparam note {
+    BackgroundColor #F5F5F5
+    BorderColor #BDBDBD
+}
+
+class AbstractProductA {
+    + operationA()
+}
+
+class AbstractProductB {
+    + operationB()
+}
+
+class ConcreteProductA1 {
+    + operationA()
+}
+
+class ConcreteProductB1 {
+    + operationB()
+}
+
+class ConcreteProductA2 {
+    + operationA()
+}
+
+class ConcreteProductB2 {
+    + operationB()
+}
+
+class AbstractFactory {
+    + createProductA() : AbstractProductA <<abstract>>
+    + createProductB() : AbstractProductB <<abstract>>
+}
+
+class ConcreteFactory1 {
+    + createProductA() : AbstractProductA
+    + createProductB() : AbstractProductB
+}
+
+class ConcreteFactory2 {
+    + createProductA() : AbstractProductA
+    + createProductB() : AbstractProductB
+}
+
+note right of AbstractFactory
+<<Abstract Factory (C++17)>>
+
+#pragma once
+
+class AbstractProductA {
+public:
+    virtual ~AbstractProductA() = default;
+    virtual void operationA() = 0;
+};
+
+class AbstractProductB {
+public:
+    virtual ~AbstractProductB() = default;
+    virtual void operationB() = 0;
+};
+
+// 产品族1
+class ConcreteProductA1 : public AbstractProductA {
+public:
+    void operationA() override { }
+};
+
+class ConcreteProductB1 : public AbstractProductB {
+public:
+    void operationB() override { }
+};
+
+// 产品族2
+class ConcreteProductA2 : public AbstractProductA {
+public:
+    void operationA() override { }
+};
+
+class ConcreteProductB2 : public AbstractProductB {
+public:
+    void operationB() override { }
+};
+
+class AbstractFactory {
+public:
+    virtual ~AbstractFactory() = default;
+    virtual AbstractProductA* createProductA() = 0;
+    virtual AbstractProductB* createProductB() = 0;
+};
+
+class ConcreteFactory1 : public AbstractFactory {
+public:
+    AbstractProductA* createProductA() override {
+        return new ConcreteProductA1();
+    }
+    AbstractProductB* createProductB() override {
+        return new ConcreteProductB1();
+    }
+};
+
+class ConcreteFactory2 : public AbstractFactory {
+public:
+    AbstractProductA* createProductA() override {
+        return new ConcreteProductA2();
+    }
+    AbstractProductB* createProductB() override {
+        return new ConcreteProductB2();
+    }
+};
+
+✔ 产品族一致性：同一工厂创建兼容产品
+✔ 跨平台：切换工厂即可切换产品线
+✔ OCP：新增产品族只需添加工厂子类
+end note
+
+AbstractProductA <|.. ConcreteProductA1
+AbstractProductA <|.. ConcreteProductA2
+AbstractProductB <|.. ConcreteProductB1
+AbstractProductB <|.. ConcreteProductB2
+
+AbstractFactory <|-- ConcreteFactory1
+AbstractFactory <|-- ConcreteFactory2
+
+ConcreteFactory1 .> ConcreteProductA1 : creates
+ConcreteFactory1 .> ConcreteProductB1 : creates
+ConcreteFactory2 .> ConcreteProductA2 : creates
+ConcreteFactory2 .> ConcreteProductB2 : creates
+
+@enduml
+```
+
+- **简单工厂 vs 工厂方法 vs 抽象工厂 演进**
+
+```plantuml
+@startuml
+title 工厂模式演进 — 从简单工厂到抽象工厂
 
 left to right direction
 skinparam rectangle {
@@ -682,99 +1066,148 @@ skinparam rectangle {
 }
 skinparam shadowing false
 
-' ===== 工厂方法 =====
-package "🏭 工厂方法模式 (Factory Method)" #E8F5E9 {
-    rectangle "Creator (抽象创建者)\n\n+ factoryMethod() : Product\n// 抽象方法，子类实现" as Creator #E3F2FD
-
-    rectangle "ConcreteCreator\n\n+ factoryMethod()\n  return new ConcreteProduct" as CC #C8E6C9
-
-    rectangle "Product (抽象产品)" as Product #FFF3E0
-    rectangle "ConcreteProduct\n\n// 具体产品" as CP #E8F5E9
-
-    Creator <|-- CC
-    Creator --> Product : creates
-    Product <|.. CP
-    CC --> CP : 实例化
+' ===== 简单工厂 =====
+package "🏭 简单工厂\n（Simple Factory）" #E3F2FD {
+    rectangle "Factory\n\n+ create(type): Product\n\n📌 根据type创建对象\n📌 不是设计模式，是编码习惯" as SF #E3F2FD
+    
+    rectangle "ProductA" as PA1 #C8E6C9
+    rectangle "ProductB" as PB1 #C8E6C9
+    
+    SF --> PA1 : type="A"
+    SF --> PB1 : type="B"
 }
 
-note right of Creator
-  **工厂方法特点**
-
-  📌 一个工厂 → 一种产品
-  📌 通过继承扩展
-  📌 产品等级单一
-
-  产品等级：一个产品家族中的
-           不同产品（如按钮）
+note right of SF
+  **简单工厂问题**
+  
+  ❌ 新增产品需修改Factory
+  ❌ 违反OCP原则
+  ❌ 工厂类职责过重
 end note
 
-' ===== 抽象工厂 =====
-package "🏭🏭 抽象工厂模式 (Abstract Factory)" #FFF3E0 {
-    rectangle "AbstractFactory\n\n+ createProductA() : ProductA\n+ createProductB() : ProductB" as AF #E3F2FD
-
-    rectangle "ConcreteFactory1\n\n+ createProductA()\n  return new ProductA1\n+ createProductB()\n  return new ProductB1" as CF1 #C8E6C9
-
-    rectangle "ConcreteFactory2\n\n+ createProductA()\n  return new ProductA2\n+ createProductB()\n  return new ProductB2" as CF2 #FFECB3
-
-    ' 产品族A
-    rectangle "ProductA (抽象)" as PA #FCE4EC
-    rectangle "ProductA1" as PA1 #E8F5E9
-    rectangle "ProductA2" as PA2 #E1F5FE
-
-    ' 产品族B
-    rectangle "ProductB (抽象)" as PB #F3E5F5
-    rectangle "ProductB1" as PB1 #C8E6C9
-    rectangle "ProductB2" as PB2 #FFF3E0
-
-    AF <|-- CF1
-    AF <|-- CF2
-
-    CF1 --> PA1 : creates A1
-    CF1 --> PB1 : creates B1
-    CF2 --> PA2 : creates A2
-    CF2 --> PB2 : creates B2
-
-    PA <|.. PA1
-    PA <|.. PA2
-    PB <|.. PB1
-    PB <|.. PB2
+' ===== 工厂方法 =====
+package "🔨 工厂方法\n（Factory Method）" #E8F5E9 {
+    rectangle "AbstractFactory\n\n+ create(): Product" as AF #E3F2FD
+    
+    rectangle "FactoryA\n\n+ create() → ProductA" as FA #C8E6C9
+    rectangle "FactoryB\n\n+ create() → ProductB" as FB #C8E6C9
+    
+    rectangle "ProductA" as PA2 #FFF3E0
+    rectangle "ProductB" as PB2 #FFF3E0
+    
+    AF <|-- FA
+    AF <|-- FB
+    FA --> PA2 : creates
+    FB --> PB2 : creates
 }
 
 note right of AF
-  **抽象工厂特点**
-
-  📌 一个工厂 → 一族产品
-  📌 产品族内产品互相关联
-  📌 通过替换工厂切换产品族
-
-  产品族：如Windows风格按钮+菜单
-          Mac风格按钮+菜单
+  **工厂方法改进**
+  
+  ✔ 新增产品只需添加子类
+  ✔ 符合OCP原则
+  ✔ 子类决定创建哪个对象
 end note
 
-' ===== 内存模型 =====
-package "🧠 内存布局对比" #F5F5F5 {
-    rectangle "工厂方法内存\n\n堆区：\n--------------------\nConcreteProduct 对象\n(通过new创建)\n\n栈区：\n--------------------\nProduct* p = creator->create()" as FM_MEM #E3F2FD
-
-    rectangle "抽象工厂内存\n\n堆区：\n--------------------\nProductA1 + ProductB1\n或 ProductA2 + ProductB2\n\n📌 同一产品族的对象一起创建\n📌 保证产品兼容性" as AF_MEM #FFF3E0
+' ===== 抽象工厂 =====
+package "🏗️ 抽象工厂\n（Abstract Factory）" #FFF3E0 {
+    rectangle "AbstractFactory\n\n+ createProductA()\n+ createProductB()" as AF2 #E3F2FD
+    
+    rectangle "Factory1\n\n+ createProductA() → A1\n+ createProductB() → B1" as F1 #C8E6C9
+    rectangle "Factory2\n\n+ createProductA() → A2\n+ createProductB() → B2" as F2 #C8E6C9
+    
+    rectangle "ProductA1" as PA3 #FCE4EC
+    rectangle "ProductB1" as PB3 #FCE4EC
+    rectangle "ProductA2" as PA4 #FCE4EC
+    rectangle "ProductB2" as PB4 #FCE4EC
+    
+    AF2 <|-- F1
+    AF2 <|-- F2
+    
+    F1 --> PA3 : creates
+    F1 --> PB3 : creates
+    F2 --> PA4 : creates
+    F2 --> PB4 : creates
 }
 
-FM_MEM -[hidden]-> AF_MEM
+note right of AF2
+  **抽象工厂扩展**
+  
+  ✔ 创建产品族（一组相关产品）
+  ✔ 保证产品兼容性
+  ✔ 切换工厂 = 切换产品线
+end note
 
-' ===== 选择建议 =====
-legend right
-  | 场景 | 选择模式 |
-  |------|---------|
-  | 一种产品需多步骤创建 | 工厂方法 |
-  | 多个相关产品需一致性 | 抽象工厂 |
-  | 跨平台UI（按钮+菜单+文本框） | 抽象工厂 |
-  | 数据库Driver | 工厂方法 |
-  | 游戏皮肤系统 | 抽象工厂 |
+' ===== 演进箭头 =====
+SF -[thickness=2]-> AF : 提取公共接口
+AF -[thickness=2]-> AF2 : 支持产品族
+
+legend bottom
+  | 模式 | 扩展方式 | 适用场景 |
+  |-----|---------|---------|
+  | 简单工厂 | 修改 Factory | 产品少且稳定 |
+  | 工厂方法 | 添加 Factory 子类 | 单产品线扩展 |
+  | 抽象工厂 | 添加 Factory 子类 | 多产品线（产品族） |
 endlegend
 
 @enduml
 ```
 
----
+- **工厂方法与抽象工厂的选择**
+
+```plantuml
+@startuml
+title 工厂模式选择决策树
+
+skinparam rectangle {
+    RoundCorner 15
+    Padding 10
+}
+skinparam shadowing false
+
+rectangle "需要创建对象？" as Start #E3F2FD
+
+rectangle "产品种类是否稳定？\n（不常新增产品）" as Q1 #FFF3E0
+
+rectangle "是否需要创建产品族？\n（多个相关产品）" as Q2 #E8F5E9
+
+rectangle "是否需要保证产品兼容性？\n（同一工厂创建的产品必须兼容）" as Q3 #FCE4EC
+
+rectangle "简单工厂\n\n📌 一个工厂\n📌 根据参数创建\n📌 最简单直接" as Simple #E3F2FD
+
+rectangle "工厂方法\n\n📌 一个产品等级\n📌 子类决定创建\n📌 OCP 扩展" as FactoryM #C8E6C9
+
+rectangle "抽象工厂\n\n📌 多个产品等级\n📌 产品族一致性\n📌 跨平台切换" as FactoryA #FFF3E0
+
+Start --> Q1
+Q1 --> |"是，产品种类稳定"| Simple
+Q1 --> |"否，需要扩展"| Q2
+Q2 --> |"否，单一产品线"| FactoryM
+Q2 --> |"是，多产品线"| Q3
+Q3 --> |"是，保证兼容性"| FactoryA
+Q3 --> |"否，无一致性要求"| FactoryM
+
+note right of Start
+  **工厂模式选择指南**
+  
+  📌 简单工厂：快速简单，适合小型项目
+  📌 工厂方法：需要 OCP 扩展，单一产品线
+  📌 抽象工厂：多产品线，产品族一致性
+end note
+
+@enduml
+```
+
+**关键区别速查表**：
+
+| 特征 | 工厂方法 | 抽象工厂 |
+|-----|---------|---------|
+| 实现方式 | 继承 | 组合 |
+| 产品数量 | 单个产品 | 多个产品（产品族） |
+| 扩展维度 | 新增产品子类 | 新增工厂子类 |
+| 核心目标 | 将创建延迟到子类 | 保证产品兼容性 |
+| 典型例子 | 数据库Connection | 跨平台UI组件 |
+| OCP 表现 | 新增产品不修改已有代码 | 新增产品族不修改已有代码 |
 
 ## 8. 代理模式（Proxy）
 
